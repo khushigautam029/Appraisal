@@ -1,0 +1,1179 @@
+{
+  "info": {
+    "name": "Appraisal System API",
+    "description": "Complete API collection for the Employee Appraisal System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"employee@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Authenticate user and get JWT token"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('authToken', response.token);",
+                  "    console.log('Token saved:', response.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Employees",
+      "item": [
+        {
+          "name": "Get All Employees",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/employee",
+              "host": ["{{baseUrl}}"],
+              "path": ["employee"]
+            }
+          }
+        },
+        {
+          "name": "Get Employee by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/employee/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["employee", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Employee by User ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/employee/user/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["employee", "user", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Employee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"department\": \"IT\",\n  \"designation\": \"Software Engineer\",\n  \"manager\": \"Jane Smith\",\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employee",
+              "host": ["{{baseUrl}}"],
+              "path": ["employee"]
+            }
+          }
+        },
+        {
+          "name": "Update Employee",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe Updated\",\n  \"email\": \"john.doe@example.com\",\n  \"department\": \"IT\",\n  \"designation\": \"Senior Software Engineer\",\n  \"manager\": \"Jane Smith\",\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employee/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["employee", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Employee",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/employee/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["employee", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Appraisal Cycles",
+      "item": [
+        {
+          "name": "Get All Cycles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cycles",
+              "host": ["{{baseUrl}}"],
+              "path": ["cycles"]
+            }
+          }
+        },
+        {
+          "name": "Get Cycle by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cycles/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["cycles", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Cycle",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Q4 2024 Appraisal\",\n  \"startDate\": \"2024-10-01\",\n  \"endDate\": \"2024-12-31\",\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cycles",
+              "host": ["{{baseUrl}}"],
+              "path": ["cycles"]
+            }
+          }
+        },
+        {
+          "name": "Update Cycle",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Q4 2024 Appraisal Updated\",\n  \"startDate\": \"2024-10-01\",\n  \"endDate\": \"2024-12-31\",\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cycles/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["cycles", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Cycle",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cycles/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["cycles", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Goals",
+      "item": [
+        {
+          "name": "Get All Goals",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/goals",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "goals"]
+            }
+          }
+        },
+        {
+          "name": "Get Goals by Employee",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/goals/employee/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "goals", "employee", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Goals by Cycle",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/goals/cycle/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "goals", "cycle", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Goals by User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/goals/user/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "goals", "user", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Goals for Manager",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/goals/manager",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "goals", "manager"]
+            }
+          }
+        },
+        {
+          "name": "Create Goal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Complete Project X\",\n  \"description\": \"Deliver Project X by end of quarter\",\n  \"weightage\": 30,\n  \"status\": \"PENDING\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/goals/employee/1/cycle/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "goals", "employee", "1", "cycle", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Goal",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Complete Project X Updated\",\n  \"description\": \"Deliver Project X by end of quarter with additional features\",\n  \"weightage\": 35,\n  \"status\": \"IN_PROGRESS\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/goals/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "goals", "1"]
+            }
+          }
+        },
+        {
+          "name": "Submit Goal",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/goals/1/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "goals", "1", "submit"]
+            }
+          }
+        },
+        {
+          "name": "Update Goal Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\"APPROVED\""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/goals/1/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "goals", "1", "status"]
+            }
+          }
+        },
+        {
+          "name": "Delete Goal",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/goals/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "goals", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Self Evaluations",
+      "item": [
+        {
+          "name": "Get Evaluations by Employee",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/evaluations/employee/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["evaluations", "employee", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Evaluations by Cycle",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/evaluations/cycle/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["evaluations", "cycle", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Evaluation by Employee and Cycle",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/evaluations/employee/1/cycle/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["evaluations", "employee", "1", "cycle", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Self Evaluation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"selfRating\": 4,\n  \"comments\": \"I have successfully completed all assigned tasks and exceeded expectations on Project X.\",\n  \"strengths\": \"Strong technical skills and problem-solving abilities\",\n  \"areasForImprovement\": \"Could improve on time management\",\n  \"careerGoals\": \"Want to take on more leadership responsibilities\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/evaluations/employee/1/cycle/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["evaluations", "employee", "1", "cycle", "1"]
+            }
+          }
+        },
+        {
+          "name": "Submit Self Evaluation",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/evaluations/submit/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["evaluations", "submit", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Self Evaluation",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/evaluations/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["evaluations", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Manager Reviews",
+      "item": [
+        {
+          "name": "Get All Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/review",
+              "host": ["{{baseUrl}}"],
+              "path": ["review"]
+            }
+          }
+        },
+        {
+          "name": "Get Reviews by Employee",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/review/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["review", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Review by Employee and Cycle",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/review/1/cycle/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["review", "1", "cycle", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Manager Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"managerRating\": 4,\n  \"managerComments\": \"Excellent performance this quarter. Consistently delivers high-quality work.\",\n  \"developmentPlan\": \"Recommend training in advanced technologies\",\n  \"promotionRecommendation\": \"Ready for senior role\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/review/1/cycle/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["review", "1", "cycle", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "HR Operations",
+      "item": [
+        {
+          "name": "Get HR Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/hr/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["hr", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "Get All Staff",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/hr/staff",
+              "host": ["{{baseUrl}}"],
+              "path": ["hr", "staff"]
+            }
+          }
+        },
+        {
+          "name": "Create Staff",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Smith\",\n  \"email\": \"jane.smith@example.com\",\n  \"department\": \"HR\",\n  \"designation\": \"HR Manager\",\n  \"role\": \"HR\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/hr/staff",
+              "host": ["{{baseUrl}}"],
+              "path": ["hr", "staff"]
+            }
+          }
+        },
+        {
+          "name": "Update Staff",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Smith Updated\",\n  \"email\": \"jane.smith@example.com\",\n  \"department\": \"HR\",\n  \"designation\": \"Senior HR Manager\",\n  \"role\": \"HR\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/hr/staff/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["hr", "staff", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Staff",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/hr/staff/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["hr", "staff", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Departments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/hr/departments",
+              "host": ["{{baseUrl}}"],
+              "path": ["hr", "departments"]
+            }
+          }
+        },
+        {
+          "name": "Create Department",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Information Technology\",\n  \"description\": \"Handles all IT operations and development\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/hr/departments",
+              "host": ["{{baseUrl}}"],
+              "path": ["hr", "departments"]
+            }
+          }
+        },
+        {
+          "name": "Delete Department",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/hr/departments/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["hr", "departments", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get All Reviews (HR)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/hr/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["hr", "reviews"]
+            }
+          }
+        },
+        {
+          "name": "Update Review Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\"APPROVED\""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/hr/reviews/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["hr", "reviews", "1"]
+            }
+          }
+        },
+        {
+          "name": "Reset Staff Passwords",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/hr/reset-staff",
+              "host": ["{{baseUrl}}"],
+              "path": ["hr", "reset-staff"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Manager Operations",
+      "item": [
+        {
+          "name": "Get Manager Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/manager/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["manager", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "Get Team Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/manager/team-status",
+              "host": ["{{baseUrl}}"],
+              "path": ["manager", "team-status"]
+            }
+          }
+        },
+        {
+          "name": "Get Manager Reports",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/manager/reports",
+              "host": ["{{baseUrl}}"],
+              "path": ["manager", "reports"]
+            }
+          }
+        },
+        {
+          "name": "Get Manager's Employees",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/manager/employees",
+              "host": ["{{baseUrl}}"],
+              "path": ["manager", "employees"]
+            }
+          }
+        },
+        {
+          "name": "Assign Target to Employee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": 1,\n  \"cycleId\": 1,\n  \"title\": \"Complete Project Alpha\",\n  \"description\": \"Lead the development of Project Alpha\",\n  \"weightage\": 40\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/manager/assign-target",
+              "host": ["{{baseUrl}}"],
+              "path": ["manager", "assign-target"]
+            }
+          }
+        },
+        {
+          "name": "Delete Goal",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/manager/goal/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["manager", "goal", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Get User Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Unread Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/1/unread",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications", "1", "unread"]
+            }
+          }
+        },
+        {
+          "name": "Mark Notification as Read",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/1/read",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications", "1", "read"]
+            }
+          }
+        },
+        {
+          "name": "Create Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Your appraisal review has been submitted\",\n  \"type\": \"REVIEW_SUBMITTED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/notifications/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get User Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboard/user/1/cycle/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "dashboard", "user", "1", "cycle", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Email",
+      "item": [
+        {
+          "name": "Send Email",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/email/send",
+              "host": ["{{baseUrl}}"],
+              "path": ["email", "send"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health"]
+            }
+          }
+        },
+        {
+          "name": "Get Configuration",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/config",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "config"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
