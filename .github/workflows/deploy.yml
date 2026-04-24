@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "backend"
-          target: "/home/${{ secrets.EC2_USERNAME }}/appraisehub"
+          target: "/home/${{ secrets.EC2_USERNAME }}/appraisal"
 
       - name: Execute Docker Compose via SSH
         uses: appleboy/ssh-action@v1.0.3
