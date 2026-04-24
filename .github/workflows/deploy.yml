@@ -7,11 +7,17 @@ on:
 
 jobs:
   deploy-backend-ec2:
-    name: Deploy to EC2
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+    - name: Deploy to EC2
+  uses: appleboy/ssh-action@v1.0.3
+  with:
+    host: ${{ secrets.EC2_HOST }}
+    username: ec2-user
+    key: ${{ secrets.EC2_SSH_KEY }}
+    script: |
+      docker pull ${{ secrets.DOCKER_USERNAME }}/appraisal-backend:latest
+      docker stop appraisal || true
+      docker rm appraisal || true
+      docker run -d -p 8080:8080 --name appraisal ${{ secrets.DOCKER_USERNAME }}/appraisal-backend:latest
 
       - name: Copy backend directory to EC2
         uses: appleboy/scp-action@v0.1.7
