@@ -13,6 +13,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -26,15 +29,20 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
+
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
                 .authorizeHttpRequests(auth -> auth
-                        // Allow preflight requests
+                        // Allow preflight (CORS)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         // Public endpoints
-                        .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers("/api/health").permitAll()
-                        .requestMatchers("/api/config").permitAll()
+                        .requestMatchers(
+                                "/auth/login",
+                                "/api/auth/login",
+                                "/api/health",
+                                "/api/config"
+                        ).permitAll()
 
                         // Protected endpoints
                         .requestMatchers("/notifications/**").authenticated()
@@ -44,47 +52,40 @@ public class SecurityConfig {
                         .requestMatchers("/evaluations/**").authenticated()
                         .requestMatchers("/cycles/**").authenticated()
 
+                        // Everything else
                         .anyRequest().authenticated()
                 )
+
                 .sessionManagement(sess ->
                         sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+
                 .build();
     }
 
     @Bean
-    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
 
-        org.springframework.web.cors.CorsConfiguration configuration =
-                new org.springframework.web.cors.CorsConfiguration();
+        CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:3000",
-                "http://localhost:4200",
-                "http://localhost:5173",
-                "https://mumbling-grout-glandular.ngrok-free.dev",
-                "https://appraisal-amber.vercel.app"
-        ));
+        // ✅ Allow all origins (best for development + Vercel)
+        configuration.setAllowedOriginPatterns(List.of("*"));
 
+        // ✅ Allowed HTTP methods
         configuration.setAllowedMethods(List.of(
                 "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
         ));
 
-        configuration.setAllowedHeaders(List.of(
-                "*",
-                "Authorization",
-                "Content-Type",
-                "Cache-Control",
-                "Accept",
-                "Origin",
-                "X-Requested-With"
-        ));
+        // ✅ Allow all headers
+        configuration.setAllowedHeaders(List.of("*"));
 
-        configuration.setAllowCredentials(true);
+        // ❗ Must be false when using "*"
+        configuration.setAllowCredentials(false);
 
-        org.springframework.web.cors.UrlBasedCorsConfigurationSource source =
-                new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
 
         source.registerCorsConfiguration("/**", configuration);
 
