@@ -3,6 +3,8 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 
+const API_BASE_URL = "http://15.207.115.145:8080";
+
 const Login = ({ setIsLoggedIn }) => {
   const [form, setForm] = useState({
     email: "",
@@ -29,7 +31,7 @@ const Login = ({ setIsLoggedIn }) => {
     setLoading(true);
 
     try {
-      const res = await fetch(`/auth/login`, {
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
