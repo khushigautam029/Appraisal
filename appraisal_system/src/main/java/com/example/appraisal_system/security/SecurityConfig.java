@@ -64,7 +64,7 @@ public class SecurityConfig {
                 "http://localhost:4200",
                 "http://localhost:5173",
                 "https://mumbling-grout-glandular.ngrok-free.dev",
-                "https://appraisal-frontend-gold.vercel.app"
+                "https://appraisal-amber.vercel.app"
         ));
 
         configuration.setAllowedMethods(List.of(

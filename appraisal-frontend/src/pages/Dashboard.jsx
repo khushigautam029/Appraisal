@@ -26,7 +26,7 @@ const Dashboard = () => {
         const cycle = await getActiveCycle();
         if (!cycle) return;
 
-        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://15.207.115.145:8080';
         const res = await fetch(`${API_BASE_URL}/api/dashboard/user/${empId}/cycle/${cycle.id}`, {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
         });
