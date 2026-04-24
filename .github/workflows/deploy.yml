@@ -3,7 +3,7 @@ name: Production Deployment (Docker)
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy-backend-ec2:
@@ -30,7 +30,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             # 1 - navigate to the backend project directory
-            cd /home/${{ secrets.EC2_USERNAME }}/appraisehub/backend
+            cd /home/${{ secrets.EC2_USERNAME }}/appraisal/backend
 
             # 2 - build the new image and recreate containers without downtime
             docker compose up --build -d
