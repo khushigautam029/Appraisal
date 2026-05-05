@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { FaBuilding, FaStar, FaUsers, FaUserTie, FaTimes, FaSpinner, FaExclamationCircle } from "react-icons/fa";
+import { FaBuilding, FaExclamationCircle, FaSpinner, FaStar, FaTimes, FaUsers, FaUserTie } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
-import { getEmployees, getReviews, getGoalsByEmployee, getSelfEvaluationByEmployee } from "../../services/managerService";
+import { getEmployees, getGoalsByEmployee, getReviews, getSelfEvaluationByEmployee } from "../../services/managerService";
 
 const TeamOverview = () => {
   const location = useLocation();

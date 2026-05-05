@@ -25,7 +25,6 @@ const AppraisalReport = () => {
   const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
-     
     fetchCycles();
   }, []);
 
@@ -34,7 +33,9 @@ const AppraisalReport = () => {
     const data = res.data || [];
     setCycles(data);
 
-    const active = data.find((c) => c.status === "Active") || data[data.length - 1];
+    const active =
+      data.find((c) => c.status === "Active") || data[data.length - 1];
+
     if (active) {
       const val = active.name || `${active.startDate}-${active.endDate}`;
       setSelectedCycle(val);
@@ -70,43 +71,67 @@ const AppraisalReport = () => {
 
   const downloadPDF = async () => {
     setIsExporting(true);
+
     setTimeout(async () => {
-      if (!reportRef.current) {
+      const input = reportRef.current;
+
+      if (!input) {
+        console.error("Report ref not found");
         setIsExporting(false);
         return;
       }
+
       try {
-        const canvas = await html2canvas(reportRef.current, { scale: 2 });
-        const img = canvas.toDataURL("image/png");
+        const canvas = await html2canvas(input, {
+          scale: 2,
+          useCORS: true,
+        });
+
+        const imgData = canvas.toDataURL("image/png");
 
         const pdf = new jsPDF("p", "mm", "a4");
-        const width = pdf.internal.pageSize.getWidth();
-        const height = (canvas.height * width) / canvas.width;
 
-        pdf.addImage(img, "PNG", 0, 0, width, height);
-        pdf.save(`${employeeName}_Report.pdf`);
-      } catch (err) {
-        console.error(err);
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+
+        const imgWidth = pageWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        // First page
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        // Multi-page support
+        while (heightLeft > 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+
+        pdf.save(`${employeeName}_Appraisal_Report.pdf`);
+      } catch (error) {
+        console.error("PDF Error:", error);
       } finally {
         setIsExporting(false);
       }
-    }, 100);
+    }, 300);
   };
 
   return (
-    <div className="p-3 bg-gray-50 min-h-screen space-y-6">
 
-      {/* 🔹 HEADER (LIKE IMAGE) */}
-      <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm border">
+    <div className="min-h-screen bg-gray-50 px-2 py-4 space-y-8 max-w-6xl mx-auto">
 
-        {/* LEFT */}
+      {/* HEADER */}
+      <div className="flex justify-between items-center bg-white p-5 rounded-xl shadow-sm border">
         <h1 className="text-2xl font-semibold text-gray-800">
           Appraisal Report
         </h1>
 
-        {/* RIGHT */}
         <div className="flex items-center gap-3">
-
           <select
             value={selectedCycle}
             onChange={(e) => {
@@ -117,7 +142,7 @@ const AppraisalReport = () => {
               );
               setSelectedCycleObj(obj);
             }}
-            className="border px-3 py-2 rounded-md text-sm bg-gray-50 focus:outline-none"
+            className="border px-4 py-2 rounded-lg text-sm bg-gray-50"
           >
             {cycles.map((c, i) => (
               <option key={i} value={c.name || `${c.startDate}-${c.endDate}`}>
@@ -128,7 +153,7 @@ const AppraisalReport = () => {
 
           <button
             onClick={handleGo}
-            className="bg-gray-800 text-white px-4 py-2 rounded-md text-sm hover:bg-gray-900"
+            className="bg-gray-800 text-white px-5 py-2 rounded-lg text-sm hover:bg-gray-900"
           >
             Load
           </button>
@@ -136,7 +161,7 @@ const AppraisalReport = () => {
           {showReport && (
             <button
               onClick={downloadPDF}
-              className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md text-sm hover:bg-green-700"
+              className="flex items-center gap-2 bg-green-600 text-white px-5 py-2 rounded-lg text-sm hover:bg-green-700"
             >
               <FaFileDownload />
               Export
@@ -145,12 +170,12 @@ const AppraisalReport = () => {
         </div>
       </div>
 
-      {/* 🔹 REPORT */}
+      {/* REPORT */}
       {showReport && (
-        <div className="bg-white rounded-lg shadow border">
+        <div className="bg-white rounded-xl shadow border overflow-hidden">
 
           {/* INFO BAR */}
-          <div className="flex justify-between text-xs text-black-500 px-6 py-3 border-b bg-gray-70">
+          <div className="flex justify-between text-sm text-gray-600 px-6 py-3 border-b bg-gray-50">
             <span><b>Name:</b> {employeeName}</span>
             <span><b>Submitted:</b> {new Date().toLocaleDateString()}</span>
             <span><b>Start:</b> {selectedCycleObj?.startDate}</span>
@@ -161,22 +186,20 @@ const AppraisalReport = () => {
           <div className="flex border-b">
             <button
               onClick={() => setActiveTab("self")}
-              className={`px-6 py-3 text-sm ${
-                activeTab === "self"
-                  ? "border-b-2 border-gray-700 text-blue-800"
-                  : "text-gray-500"
-              }`}
+              className={`px-6 py-3 text-sm font-medium transition ${activeTab === "self"
+                  ? "border-b-2 border-blue-600 text-blue-700 bg-blue-50"
+                  : "text-gray-500 hover:bg-gray-50"
+                }`}
             >
               Self Review
             </button>
 
             <button
               onClick={() => setActiveTab("manager")}
-              className={`px-6 py-3 text-sm ${
-                activeTab === "manager"
-                  ? "border-b-2 border-gray-700 text-gray-800"
-                  : "text-blue-800"
-              }`}
+              className={`px-6 py-3 text-sm font-medium transition ${activeTab === "manager"
+                  ? "border-b-2 border-indigo-600 text-indigo-700 bg-indigo-50"
+                  : "text-gray-500 hover:bg-gray-50"
+                }`}
             >
               Manager Review
             </button>
@@ -184,131 +207,173 @@ const AppraisalReport = () => {
 
           <div className="p-6">
 
-            {/* SELF */}
+            {/* SELF TAB */}
             {activeTab === "self" && (
-              <>
-                {!selfData.found ? (
-                  <p className="text-gray-400 text-sm">
-                    No self appraisal submitted.
-                  </p>
-                ) : (
-                  <div className="grid grid-cols-2 gap-4">
-                    <Card title="Achievements" value={selfData.achievements} colorClass="bg-blue-50 border-blue-100 text-blue-900" />
-                    <Card title="Improvements" value={selfData.improvements} colorClass="bg-amber-50 border-amber-100 text-amber-900" />
-                    <Card title="Skills" value={selfData.skills} colorClass="bg-emerald-50 border-emerald-100 text-emerald-900" />
-                    <Card title="Organization Work" value={selfData.organizationWork} colorClass="bg-purple-50 border-purple-100 text-purple-900" />
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* MANAGER */}
-            {activeTab === "manager" && (
-              <>
-                {!managerData.found ? (
-                  <p className="text-gray-400 text-sm">
-                    Review pending from manager.
-                  </p>
-                ) : (
-                  <>
-                    <div className="grid grid-cols-2 gap-4">
-                      <Card title="Communication" value={managerData.communication} colorClass="bg-sky-50 border-sky-100 text-sky-900" />
-                      <Card title="Technical Skills" value={managerData.technicalSkills} colorClass="bg-indigo-50 border-indigo-100 text-indigo-900" />
-                      <Card title="Teamwork" value={managerData.teamwork} colorClass="bg-fuchsia-50 border-fuchsia-100 text-fuchsia-900" />
-                      <Card title="Punctuality" value={managerData.punctuality} colorClass="bg-rose-50 border-rose-100 text-rose-900" />
-                    </div>
-
-                    <div className="mt-4 space-y-3">
-                      <Card title="Strengths" value={managerData.strengths} colorClass="bg-emerald-50 border-emerald-100 text-emerald-900" />
-                      <Card title="Improvements" value={managerData.improvements} colorClass="bg-amber-50 border-amber-100 text-amber-900" />
-                      <Card title="Final Remarks" value={managerData.remarks} colorClass="bg-violet-50 border-violet-100 text-violet-900" />
-                    </div>
-
-                    <div className="mt-4 flex justify-between border-t pt-4">
-                      <span className="text-sm text-gray-600">
-                        Overall Rating
-                      </span>
-                      <span className="font-semibold text-gray-800">
-                        {managerData.rating} / 5
-                      </span>
-                    </div>
-                  </>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* HIDDEN TEMPLATE FOR PDF GENERATION */}
-      {showReport && isExporting && (
-        <div className="absolute top-[-9999px] left-[-9999px] w-[800px] bg-white text-black p-8">
-          <div ref={reportRef} className="bg-white p-8 rounded-lg">
-            <div className="border-b pb-4 mb-6">
-              <h2 className="text-xl font-semibold text-gray-800">
-                Appraisal Summary
-              </h2>
-              <div className="text-sm text-gray-500 mt-2 flex justify-between">
-                <div>
-                  <p><b>Name:</b> {employeeName}</p>
-                  <p><b>Cycle:</b> {selectedCycle}</p>
-                </div>
-                <div className="text-right">
-                  <p>{new Date().toLocaleDateString()}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mb-6">
-              <h3 className="text-md font-semibold text-gray-700 mb-3">Self Evaluation</h3>
-              {!selfData.found ? (
-                <p className="text-gray-400 text-sm">No self appraisal submitted.</p>
+              !selfData.found ? (
+                <StatusBox
+                  title="Self Appraisal Not Submitted"
+                  description="You have not submitted your self appraisal for this cycle."
+                  color="yellow"
+                />
               ) : (
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <Card title="Achievements" value={selfData.achievements} colorClass="bg-blue-50 border-blue-100 text-blue-900" />
-                  <Card title="Improvements" value={selfData.improvements} colorClass="bg-amber-50 border-amber-100 text-amber-900" />
-                  <Card title="Skills" value={selfData.skills} colorClass="bg-emerald-50 border-emerald-100 text-emerald-900" />
-                  <Card title="Organization Work" value={selfData.organizationWork} colorClass="bg-purple-50 border-purple-100 text-purple-900" />
+                <div className="grid md:grid-cols-2 gap-6">
+                  <Card title="Achievements" value={selfData.achievements} color="blue" />
+                  <Card title="Improvements" value={selfData.improvements} color="amber" />
+                  <Card title="Skills" value={selfData.skills} color="emerald" />
+                  <Card title="Organization Work" value={selfData.organizationWork} color="purple" />
                 </div>
-              )}
-            </div>
+              )
+            )}
 
-            <div>
-              <h3 className="text-md font-semibold text-gray-700 mb-3">Manager Evaluation</h3>
-              {!managerData.found ? (
-                <p className="text-gray-400 text-sm">Review pending from manager.</p>
+            {/* MANAGER TAB */}
+            {activeTab === "manager" && (
+              !managerData.found ? (
+                <StatusBox
+                  title="Manager Review Pending"
+                  description="Your manager has not reviewed your appraisal yet."
+                  color="blue"
+                />
               ) : (
                 <>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <Card title="Communication" value={managerData.communication} colorClass="bg-sky-50 border-sky-100 text-sky-900" />
-                    <Card title="Technical Skills" value={managerData.technicalSkills} colorClass="bg-indigo-50 border-indigo-100 text-indigo-900" />
-                    <Card title="Teamwork" value={managerData.teamwork} colorClass="bg-fuchsia-50 border-fuchsia-100 text-fuchsia-900" />
-                    <Card title="Punctuality" value={managerData.punctuality} colorClass="bg-rose-50 border-rose-100 text-rose-900" />
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <Card title="Communication" value={managerData.communication} color="sky" />
+                    <Card title="Technical Skills" value={managerData.technicalSkills} color="indigo" />
+                    <Card title="Teamwork" value={managerData.teamwork} color="fuchsia" />
+                    <Card title="Punctuality" value={managerData.punctuality} color="rose" />
                   </div>
-                  <div className="mt-4 space-y-3 text-sm">
-                    <Card title="Strengths" value={managerData.strengths} colorClass="bg-emerald-50 border-emerald-100 text-emerald-900" />
-                    <Card title="Improvements" value={managerData.improvements} colorClass="bg-amber-50 border-amber-100 text-amber-900" />
-                    <Card title="Final Remarks" value={managerData.remarks} colorClass="bg-violet-50 border-violet-100 text-violet-900" />
+
+                  <div className="mt-6 space-y-4">
+                    <Card title="Strengths" value={managerData.strengths} color="emerald" />
+                    <Card title="Improvements" value={managerData.improvements} color="amber" />
+                    <Card title="Final Remarks" value={managerData.remarks} color="violet" />
                   </div>
-                  <div className="mt-4 flex justify-between items-center border-t pt-4">
-                    <p className="text-gray-600 font-medium">Overall Rating</p>
-                    <span className="text-lg font-semibold text-indigo-600">{managerData.rating} / 5</span>
+
+                  <div className="mt-6 flex justify-between border-t pt-4">
+                    <span className="text-gray-600">Overall Rating</span>
+                    <span className="font-semibold text-lg text-indigo-600">
+                      {managerData.rating} / 5
+                    </span>
                   </div>
                 </>
-              )}
-            </div>
+              )
+            )}
           </div>
         </div>
       )}
+      {showReport && isExporting && (
+        <div className="absolute top-[-9999px] left-[-9999px] w-[1000px] bg-white p-6">
+
+          <div ref={reportRef} className="bg-white p-6">
+
+            {/* HEADER */}
+            <h1 className="text-2xl font-bold mb-4 text-gray-800">
+              Appraisal Report
+            </h1>
+
+            <div className="flex justify-between text-sm text-gray-600 mb-4">
+              <span><b>Name:</b> {employeeName}</span>
+              <span><b>Date:</b> {new Date().toLocaleDateString()}</span>
+              <span><b>Cycle:</b> {selectedCycle}</span>
+            </div>
+
+            {/* SELF SECTION */}
+            <h2 className="text-lg font-semibold mb-3 text-blue-700">
+              Self Review
+            </h2>
+
+            {selfData.found ? (
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <Card title="Achievements" value={selfData.achievements} color="blue" />
+                <Card title="Improvements" value={selfData.improvements} color="amber" />
+                <Card title="Skills" value={selfData.skills} color="emerald" />
+                <Card title="Organization Work" value={selfData.organizationWork} color="purple" />
+              </div>
+            ) : (
+              <p className="text-gray-400 mb-6">Not Submitted</p>
+            )}
+
+            {/* MANAGER SECTION */}
+            <h2 className="text-lg font-semibold mb-3 text-indigo-700">
+              Manager Review
+            </h2>
+
+            {managerData.found ? (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <Card title="Communication" value={managerData.communication} color="sky" />
+                  <Card title="Technical Skills" value={managerData.technicalSkills} color="indigo" />
+                  <Card title="Teamwork" value={managerData.teamwork} color="fuchsia" />
+                  <Card title="Punctuality" value={managerData.punctuality} color="rose" />
+                </div>
+
+                <div className="mt-4 space-y-3">
+                  <Card title="Strengths" value={managerData.strengths} color="emerald" />
+                  <Card title="Improvements" value={managerData.improvements} color="amber" />
+                  <Card title="Final Remarks" value={managerData.remarks} color="violet" />
+                </div>
+
+                <div className="mt-4 flex justify-between border-t pt-4">
+                  <span className="text-gray-600">Overall Rating</span>
+                  <span className="font-bold text-lg text-indigo-600">
+                    {managerData.rating} / 5
+                  </span>
+                </div>
+              </>
+            ) : (
+              <p className="text-gray-400">Pending</p>
+            )}
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
 
-const Card = ({ title, value, colorClass }) => (
-  <div className={`border rounded-xl p-4 transition shadow-sm ${colorClass || "bg-gray-50 border-gray-100 hover:bg-gray-100"}`}>
-    <p className={`text-xs font-bold uppercase tracking-wider opacity-70 mb-1`}>{title}</p>
-    <p className="text-sm font-medium text-gray-900 leading-relaxed font-sans">{value || "N/A"}</p>
-  </div>
-);
+
+
+
+
+/* STATUS BOX */
+const StatusBox = ({ title, description, color }) => {
+  const styles = {
+    yellow: "bg-yellow-50 border-yellow-300 text-yellow-800",
+    blue: "bg-blue-50 border-blue-300 text-blue-800",
+  };
+
+  return (
+    <div className={`p-10 rounded-xl border-l-4 shadow-sm text-center ${styles[color]}`}>
+      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+      <p className="text-sm">{description}</p>
+    </div>
+  );
+};
+
+/* COLORED CARD */
+const Card = ({ title, value, color }) => {
+  const styles = {
+    blue: "bg-blue-50 border-blue-200 text-blue-900",
+    amber: "bg-amber-50 border-amber-200 text-amber-900",
+    emerald: "bg-emerald-50 border-emerald-200 text-emerald-900",
+    purple: "bg-purple-50 border-purple-200 text-purple-900",
+    sky: "bg-sky-50 border-sky-200 text-sky-900",
+    indigo: "bg-indigo-50 border-indigo-200 text-indigo-900",
+    fuchsia: "bg-fuchsia-50 border-fuchsia-200 text-fuchsia-900",
+    rose: "bg-rose-50 border-rose-200 text-rose-900",
+    violet: "bg-violet-50 border-violet-200 text-violet-900",
+  };
+
+  return (
+    <div className={`border rounded-xl p-4 shadow-sm hover:shadow-md transition ${styles[color]}`}>
+      <p className="text-xs font-bold uppercase tracking-wide opacity-70 mb-1">
+        {title}
+      </p>
+      <p className="text-sm leading-relaxed">
+        {value || "N/A"}
+      </p>
+    </div>
+  );
+};
 
 export default AppraisalReport;
