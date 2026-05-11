@@ -4,8 +4,10 @@ import com.example.appraisal_system.dto.HrStaffRequest;
 import com.example.appraisal_system.entity.Department;
 import com.example.appraisal_system.entity.Review;
 import com.example.appraisal_system.service.HrService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/hr")
+@PreAuthorize("hasRole('HR')")
 public class HrController {
 
     @Autowired
@@ -25,13 +28,13 @@ public class HrController {
     }
 
     @PostMapping("/staff")
-    public ResponseEntity<String> addStaff(@RequestBody HrStaffRequest request) {
+    public ResponseEntity<String> addStaff(@Valid @RequestBody HrStaffRequest request) {
         String result = hrService.addStaff(request);
         return ResponseEntity.ok(result);
     }
 
     @PutMapping("/staff/{id}")
-    public ResponseEntity<String> updateStaff(@PathVariable Long id, @RequestBody HrStaffRequest request) {
+    public ResponseEntity<String> updateStaff(@PathVariable Long id, @Valid @RequestBody HrStaffRequest request) {
         try {
             String result = hrService.updateStaff(id, request);
             return ResponseEntity.ok(result);

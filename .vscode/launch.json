@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "AppraisalSystemApplication",
+            "request": "launch",
+            "mainClass": "com.example.appraisal_system.AppraisalSystemApplication",
+            "projectName": "appraisal_system",
+            "cwd": "${workspaceFolder}/appraisal_system",
+            "envFile": "${workspaceFolder}/appraisal_system/.env"
+        }
+    ]
+}

@@ -1,19 +1,36 @@
 package com.example.appraisal_system.service;
 
-import com.example.appraisal_system.dto.HrStaffRequest;
-import com.example.appraisal_system.entity.*;
-import com.example.appraisal_system.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.appraisal_system.dto.HrStaffRequest;
+import com.example.appraisal_system.entity.Department;
+import com.example.appraisal_system.entity.Employee;
+import com.example.appraisal_system.entity.Manager;
+import com.example.appraisal_system.entity.Review;
+import com.example.appraisal_system.entity.User;
+import com.example.appraisal_system.repository.AppraisalRepository;
+import com.example.appraisal_system.repository.DepartmentRepository;
+import com.example.appraisal_system.repository.EmployeeRepository;
+import com.example.appraisal_system.repository.GoalRepository;
+import com.example.appraisal_system.repository.ManagerRepository;
+import com.example.appraisal_system.repository.NotificationRepository;
+import com.example.appraisal_system.repository.ReviewRepository;
+import com.example.appraisal_system.repository.SelfEvaluationRepository;
+import com.example.appraisal_system.repository.UserRepository;
+
 @Service
 public class HrService {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -116,7 +133,7 @@ public class HrService {
         // Create User
         User user = new User();
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         String role = request.getPrimaryRole() != null ? request.getPrimaryRole().toUpperCase() : "EMPLOYEE";
         if (request.getSecondaryRole() != null && !request.getSecondaryRole().isEmpty()
@@ -214,12 +231,13 @@ public class HrService {
             // Self-healing: Create missing user record
             System.out.println("Self-healing: Creating missing user record for " + request.getEmail());
             user = new User();
-            user.setPassword(request.getPassword() != null && !request.getPassword().isEmpty() ? request.getPassword() : "Welcome@123");
+            String rawPass = request.getPassword() != null && !request.getPassword().isEmpty() ? request.getPassword() : "Welcome@123";
+            user.setPassword(passwordEncoder.encode(rawPass));
         }
 
         user.setEmail(request.getEmail());
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-            user.setPassword(request.getPassword());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
         String role = primaryRole;
@@ -419,7 +437,7 @@ public class HrService {
                     System.out.println("Repairing missing user for Employee: " + email);
                     User newUser = new User();
                     newUser.setEmail(email);
-                    newUser.setPassword("Welcome@123");
+                    newUser.setPassword(passwordEncoder.encode("Welcome@123"));
                     newUser.setRole("EMPLOYEE");
                     userRepository.save(newUser);
                 }
@@ -433,7 +451,7 @@ public class HrService {
                     System.out.println("Repairing missing user for Manager: " + email);
                     User newUser = new User();
                     newUser.setEmail(email);
-                    newUser.setPassword("Welcome@123");
+                    newUser.setPassword(passwordEncoder.encode("Welcome@123"));
                     newUser.setRole("MANAGER");
                     userRepository.save(newUser);
                 }

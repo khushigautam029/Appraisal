@@ -5,12 +5,14 @@ import com.example.appraisal_system.dto.TeamMemberDTO;
 import com.example.appraisal_system.entity.*;
 import com.example.appraisal_system.service.ManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
 @RestController
 @RequestMapping("/manager")
+@PreAuthorize("hasRole('MANAGER')")
 public class ManagerController {
 
     @Autowired

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.appraisal_system.security.JwtUtil;
 import com.example.appraisal_system.repository.ManagerRepository;
 import com.example.appraisal_system.repository.EmployeeRepository;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
@@ -27,7 +28,7 @@ public class AuthController {
     private EmployeeRepository employeeRepository;
 
     @PostMapping("/login")
-    public java.util.Map<String, Object> login(@RequestBody User request) {
+    public java.util.Map<String, Object> login(@Valid @RequestBody User request) {
 
         User user = authService.login(request.getEmail(), request.getPassword());
 

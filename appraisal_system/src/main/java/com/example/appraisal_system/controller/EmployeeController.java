@@ -3,12 +3,14 @@ package com.example.appraisal_system.controller;
 import com.example.appraisal_system.entity.Employee;
 import com.example.appraisal_system.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/employee")
+@PreAuthorize("hasRole('EMPLOYEE')")
 public class EmployeeController {
 
     @Autowired

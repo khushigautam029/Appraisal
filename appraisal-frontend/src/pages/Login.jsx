@@ -3,7 +3,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 
-const API_BASE_URL = "http://15.207.115.145:8080";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://3.109.25.2:8080";
 
 const Login = ({ setIsLoggedIn }) => {
   const [form, setForm] = useState({
@@ -42,18 +42,21 @@ const Login = ({ setIsLoggedIn }) => {
         }),
       });
 
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Invalid credentials ❌");
+      }
+
       const data = await res.json();
 
       // ✅ Store data
       localStorage.setItem("login", "true");
-      localStorage.setItem("token", data.token); // Add token storage
+      localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.role);
       localStorage.setItem("actualRole", data.role);
       localStorage.setItem("userId", data.id);
-      localStorage.setItem("userName", data.name); // ✅ STORE NAME
-      localStorage.setItem("userEmail", data.email); // ✅ STORE EMAIL
-
-      setIsLoggedIn(true);
+      localStorage.setItem("userName", data.name);
+      localStorage.setItem("userEmail", data.email);
 
       setIsLoggedIn(true);
 
@@ -70,8 +73,8 @@ const Login = ({ setIsLoggedIn }) => {
         navigate("/login");
       }
 
-    } catch {
-      alert("Invalid credentials ❌");
+    } catch (err) {
+      alert(err.message || "Login failed ❌");
     } finally {
       setLoading(false);
     }

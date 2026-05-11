@@ -8,6 +8,10 @@ export const getNotifications = async (userId, role) => {
     if (!token) {
       console.warn("⚠️ No token found in localStorage. User may not be authenticated.");
     }
+    if (!userId || !role) {
+      console.warn("⚠️ userId or role is missing. Skipping notification fetch.");
+      return [];
+    }
     console.log(`📡 Fetching notifications for userId=${userId}, role=${role}`);
     const response = await api.get(`${API_URL}/${userId}?role=${role}`);
     console.log("✅ Notifications fetched successfully:", response.data);
@@ -23,6 +27,10 @@ export const getUnreadNotifications = async (userId, role) => {
     const token = localStorage.getItem("token");
     if (!token) {
       console.warn("⚠️ No token found in localStorage. User may not be authenticated.");
+    }
+    if (!userId || !role) {
+      console.warn("⚠️ userId or role is missing. Skipping unread notification fetch.");
+      return [];
     }
     console.log(`📡 Fetching unread notifications for userId=${userId}, role=${role}`);
     const response = await api.get(`${API_URL}/${userId}/unread?role=${role}`);

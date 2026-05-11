@@ -1,8 +1,10 @@
 package com.example.appraisal_system.security;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,6 +19,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -24,6 +29,14 @@ public class SecurityConfig {
 
     @Autowired
     private JwtAuthFilter authFilter;
+
+    @Value("${cors.allowed-origins}")
+    private String allowedOrigins;
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -70,8 +83,16 @@ public class SecurityConfig {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // ✅ Allow all origins (best for development + Vercel)
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        // ✅ Restrict origins to specific domains
+        if (allowedOrigins != null && !allowedOrigins.isEmpty()) {
+            List<String> origins = Arrays.stream(allowedOrigins.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .toList();
+            configuration.setAllowedOrigins(origins);
+        } else {
+            configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        }
 
         // ✅ Allowed HTTP methods
         configuration.setAllowedMethods(List.of(
@@ -81,8 +102,8 @@ public class SecurityConfig {
         // ✅ Allow all headers
         configuration.setAllowedHeaders(List.of("*"));
 
-        // ❗ Must be false when using "*"
-        configuration.setAllowCredentials(false);
+        // ✅ Allow credentials (safe when origins are restricted)
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();

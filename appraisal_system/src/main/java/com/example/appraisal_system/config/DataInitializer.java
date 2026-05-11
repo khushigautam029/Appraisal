@@ -10,8 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Configuration
 public class DataInitializer implements CommandLineRunner {
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
   @Autowired
   private UserRepository userRepository;
@@ -66,7 +71,7 @@ public class DataInitializer implements CommandLineRunner {
   private User createUser(String email, String password, String role) {
     User u = new User();
     u.setEmail(email);
-    u.setPassword(password);
+    u.setPassword(passwordEncoder.encode(password));
     u.setRole(role);
     return u;
   }
