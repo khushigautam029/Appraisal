@@ -6,113 +6,148 @@ import {
     FaUserPlus,
     FaUsers
 } from "react-icons/fa";
+
 import { NavLink } from "react-router-dom";
 import logo from "../assets/logo.png";
 
 const HrSidebar = () => {
 
-    const activeClass = "bg-blue-600 text-white font-semibold shadow-sm";
-    const normalClass = "text-gray-600 hover:bg-gray-100";
+    const menu = [
+        {
+            name: "Dashboard",
+            path: "/hr-dashboard",
+            icon: <FaChartBar size={15} />
+        },
+        {
+            name: "Add Employee",
+            path: "/add-employee",
+            icon: <FaUserPlus size={15} />
+        },
+        {
+            name: "Managers",
+            path: "/managers",
+            icon: <FaUsers size={15} />
+        },
+        {
+            name: "Departments",
+            path: "/departments",
+            icon: <FaBuilding size={15} />
+        },
+        {
+            name: "Create Cycle",
+            path: "/create-cycle",
+            icon: <FaCalendarPlus size={15} />
+        },
+        {
+            name: "Reviews",
+            path: "/manager-appraisals",
+            icon: <FaClipboardCheck size={15} />
+        }
+    ];
 
     return (
-        <div className="w-64 bg-white border-r h-screen flex flex-col">
+        <div
+            className="
+                w-64 h-screen
+                bg-gradient-to-b from-blue-50 via-white to-indigo-50
+                border-r border-blue-100
+                flex flex-col
+                shadow-2xl
+            "
+        >
 
-            {/* 🔥 HEADER (Logo + Name) */}
-            <div className="flex items-center gap-3 px-4 py-3 border-b">
+            {/* HEADER */}
+            <div
+                className="
+                    h-20 flex items-center gap-3 px-2 border-b border-gray-200
+                    bg-white/70 backdrop-blur-md
+                    shadow-sm
+                "
+            >
 
-                <img
-                    src={logo}
-                    alt="logo"
-                    className="w-10 h-10 object-cover rounded-full border"
-                />
+                <div
+                    className="
+                        p-1 rounded-full
+                        bg-white shadow-md
+                        border border-blue-100
+                    "
+                >
+                    <img
+                        src={logo}
+                        alt="logo"
+                        className="w-10 h-10 object-cover rounded-full"
+                    />
+                </div>
 
-                <h1 className="text-blue-800 text-lg font-bold ">
-                    Appraisal System
-                </h1>
+                <div>
+                    <h1 className="text-blue-900 text-sm font-bold tracking-wide">
+                        Appraisal System
+                    </h1>
+
+                    <p className="text-[10px] text-gray-500">
+                        HR Panel
+                    </p>
+                </div>
+
             </div>
 
-            {/* 🔥 MENU */}
-            <ul className="p-3 text-sm space-y-2 flex-1 overflow-y-auto">
+            {/* MENU */}
+            <ul className="flex-1 px-3 py-5 space-y-3 overflow-y-auto">
 
-                {/* Dashboard */}
-                <li>
-                    <NavLink
-                        to="/hr-dashboard"
-                        className={({ isActive }) =>
-                            `flex items-center gap-2 p-2 rounded-lg transition ${isActive ? activeClass : normalClass
-                            }`
-                        }
-                    >
-                        <FaChartBar size={14} /> Dashboard
-                    </NavLink>
-                </li>
-
-                {/* Add Employee */}
-                <li>
-                    <NavLink
-                        to="/add-employee"
-                        className={({ isActive }) =>
-                            `flex items-center gap-2 p-2 rounded-lg transition ${isActive ? activeClass : normalClass
-                            }`
-                        }
-                    >
-                        <FaUserPlus size={14} /> Add Employee
-                    </NavLink>
-                </li>
-
-                {/* Managers */}
-                <li>
-                    <NavLink
-                        to="/managers"
-                        className={({ isActive }) =>
-                            `flex items-center gap-2 p-2 rounded-lg transition ${isActive ? activeClass : normalClass
-                            }`
-                        }
-                    >
-                        <FaUsers size={14} /> Managers
-                    </NavLink>
-                </li>
-
-                {/* Departments */}
-                <li>
-                    <NavLink
-                        to="/departments"
-                        className={({ isActive }) =>
-                            `flex items-center gap-2 p-2 rounded-lg transition ${isActive ? activeClass : normalClass
-                            }`
-                        }
-                    >
-                        <FaBuilding size={14} /> Departments
-                    </NavLink>
-                </li>
-
-                {/* Create Cycle */}
-                <li>
-                    <NavLink
-                        to="/create-cycle"
-                        className={({ isActive }) =>
-                            `flex items-center gap-2 p-2 rounded-lg transition ${isActive ? activeClass : normalClass
-                            }`
-                        }
-                    >
-                        <FaCalendarPlus size={14} /> Create Cycle
-                    </NavLink>
-                </li>
-
-                {/* Manager Reviews */}
-                <li>
-                    <NavLink
-                        to="/manager-appraisals"
-                        className={({ isActive }) =>
-                            `flex items-center gap-2 p-2 rounded-lg transition ${isActive ? activeClass : normalClass
-                            }`
-                        }
-                    >
-                        <FaClipboardCheck size={14} /> Reviews
-                    </NavLink>
-                </li>
+                {menu.map((item, index) => (
+                    <li key={index}>
+                        <NavLink
+                            to={item.path}
+                            className={({ isActive }) =>
+                                `
+                                flex items-center gap-3
+                                px-4 py-3
+                                rounded-2xl
+                                text-xs font-medium
+                                transition-all duration-300
+                                shadow-sm
+                                ${isActive
+                                    ? `
+                                            bg-gradient-to-r from-blue-500 to-indigo-500
+                                            text-white
+                                            shadow-lg
+                                            scale-[1.02]
+                                          `
+                                    : `
+                                            bg-white/80
+                                            text-gray-700
+                                            hover:bg-blue-100
+                                            hover:text-blue-700
+                                            hover:shadow-md
+                                          `
+                                }
+                            `
+                            }
+                        >
+                            {item.icon}
+                            <span>{item.name}</span>
+                        </NavLink>
+                    </li>
+                ))}
 
             </ul>
+
+            {/* FOOTER */}
+            <div className="p-4 border-t border-blue-100">
+
+                <div
+                    className="
+                        bg-white/80
+                        rounded-2xl
+                        p-3
+                        shadow-md
+                        text-center
+                    "
+                >
+                </div>
+
+            </div>
+
         </div>
     );
 };

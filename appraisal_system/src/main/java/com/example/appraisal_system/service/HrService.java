@@ -82,7 +82,7 @@ public class HrService {
         data.put("totalManagers", managers.size());
         data.put("totalDepartments", departments.size());
         
-        List<User> users = userRepository.findAll();
+        // List<User> users = userRepository.findAll();
 
         // ✅ Add reports to manager data
         List<Map<String, Object>> managersWithReports = managers.stream().map(m -> {

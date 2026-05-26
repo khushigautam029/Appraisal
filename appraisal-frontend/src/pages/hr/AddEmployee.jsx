@@ -3,7 +3,7 @@ import {
   addHrStaff,
   deleteHrStaff,
   getHrDashboard,
-  updateHrStaff, // ✅ FIXED
+  updateHrStaff,
 } from "../../services/hrService";
 
 const AddEmployee = () => {
@@ -113,7 +113,7 @@ const AddEmployee = () => {
   };
 
   return (
-    <div className="p-1 bg-gray-100 min-h-screen">
+    <div className="p-1 bg-white-100 min-h-screen">
 
       {/* HEADER */}
       <div className="flex justify-between items-center mb-4">

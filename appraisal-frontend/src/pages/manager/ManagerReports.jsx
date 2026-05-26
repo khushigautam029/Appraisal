@@ -27,7 +27,7 @@ const ManagerReports = () => {
             const data = res.data || [];
             setCycles(data);
 
-            const active = data.find(c => c.status === "Active");
+            const active = data.find(c => c.status?.toLowerCase() === "active");
             const defaultCycle = active || data[data.length - 1];
             if (defaultCycle) {
                 setSelectedCycleId(defaultCycle.id.toString());

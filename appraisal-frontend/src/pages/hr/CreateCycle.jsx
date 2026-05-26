@@ -136,7 +136,7 @@ const CreateCycle = () => {
   };
 
   return (
-    <div className="p-1 bg-gray-100 min-h-screen space-y-5">
+    <div className="p-1 bg-white-100 min-h-screen space-y-5">
 
       {/* HEADER */}
       <div>

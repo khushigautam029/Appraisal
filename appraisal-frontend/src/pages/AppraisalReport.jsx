@@ -34,7 +34,7 @@ const AppraisalReport = () => {
     setCycles(data);
 
     const active =
-      data.find((c) => c.status === "Active") || data[data.length - 1];
+      data.find((c) => c.status?.toLowerCase() === "active") || data[data.length - 1];
 
     if (active) {
       const val = active.name || `${active.startDate}-${active.endDate}`;

@@ -38,6 +38,10 @@ export const getReviews = async () => {
   return await api.get("/review");
 };
 
+export const getReviewByEmployeeAndCycle = (empId, cycleId) => {
+  return api.get(`/review/${empId}/cycle/${cycleId}`);
+};
+
 export const assignTarget = (empId, cycleId, data) => {
   return api.post(`/api/goals/employee/${empId}/cycle/${cycleId}`, data);
 };
@@ -60,4 +64,8 @@ export const getGoalsByEmployee = (empId) => {
 
 export const getSelfEvaluationByEmployee = (empId) => {
   return api.get(`/evaluations/employee/${empId}`);
+};
+
+export const getSelfEvaluationByEmployeeAndCycle = (empId, cycleId) => {
+  return api.get(`/evaluations/employee/${empId}/cycle/${cycleId}`);
 };

@@ -1,15 +1,15 @@
 package com.example.appraisal_system.service;
 
-import com.example.appraisal_system.dto.DashboardResponse;
-import com.example.appraisal_system.entity.SelfEvaluation;
-import com.example.appraisal_system.entity.Review;
-import com.example.appraisal_system.entity.AppraisalCycle;
-import com.example.appraisal_system.repository.AppraisalCycleRepository;
-import com.example.appraisal_system.repository.GoalRepository;
-import com.example.appraisal_system.repository.SelfEvaluationRepository;
-import com.example.appraisal_system.repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.example.appraisal_system.dto.DashboardResponse;
+import com.example.appraisal_system.entity.Review;
+import com.example.appraisal_system.entity.SelfEvaluation;
+// import com.example.appraisal_system.repository.AppraisalCycleRepository;
+import com.example.appraisal_system.repository.GoalRepository;
+import com.example.appraisal_system.repository.ReviewRepository;
+import com.example.appraisal_system.repository.SelfEvaluationRepository;
 
 @Service
 public class DashboardService {
@@ -23,8 +23,8 @@ public class DashboardService {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    @Autowired
-    private AppraisalCycleRepository cycleRepository;
+    // @Autowired
+    // private AppraisalCycleRepository cycleRepository;
 
     @Autowired
     private com.example.appraisal_system.repository.UserRepository userRepository;
@@ -76,7 +76,7 @@ public class DashboardService {
         } else if ("SUBMITTED".equals(selfEval.getStatus())) {
             response.setSelfAppraisalStatus("Submitted");
         } else if ("COMPLETED".equals(selfEval.getStatus())) {
-             response.setSelfAppraisalStatus("Completed");
+            response.setSelfAppraisalStatus("Completed");
         } else {
             response.setSelfAppraisalStatus("Draft");
         }
@@ -102,7 +102,7 @@ public class DashboardService {
             response.setAppraisalStatus(selfEval != null ? "In Progress" : "Not Started");
         }
         
-        response.setPromotionStatus("No"); 
+        response.setPromotionStatus("No");
 
         return response;
     }

@@ -28,8 +28,6 @@ function App() {
 		localStorage.getItem("login") === "true",
 	);
 
-	const role = localStorage.getItem("role");
-
 	return (
 		<BrowserRouter>
 			<Routes>
@@ -42,21 +40,8 @@ function App() {
 				{/* PROTECTED ROUTES */}
 				{isLoggedIn ? (
 					<Route path="/" element={<MainLayout />}>
-						{/* 🔥 DEFAULT REDIRECTION */}
-						<Route
-							index
-							element={
-								role === "EMPLOYEE" ? (
-									<Navigate to="sample-appraisal" />
-								) : role === "MANAGER" ? (
-									<Navigate to="manager-dashboard" />
-								) : role === "HR" ? (
-									<Navigate to="hr-dashboard" />
-								) : (
-									<Navigate to="/login" />
-								)
-							}
-						/>
+						{/* DEFAULT REDIRECTION */}
+						<Route index element={<Navigate to="/login" replace />} />
 
 						{/* ================= EMPLOYEE ================= */}
 						<Route path="guidelines" element={<GuidelinePage />} />

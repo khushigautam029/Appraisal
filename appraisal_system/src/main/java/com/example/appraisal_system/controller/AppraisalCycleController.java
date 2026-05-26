@@ -10,7 +10,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/cycles")
-@PreAuthorize("hasRole('HR')")
 public class AppraisalCycleController {
 
     @Autowired
@@ -18,6 +17,7 @@ public class AppraisalCycleController {
 
     // CREATE
     @PostMapping
+    @PreAuthorize("hasRole('HR')")
     public String createCycle(@RequestBody AppraisalCycle cycle) {
         service.createCycle(cycle);
         return "Cycle inserted successfully!";
@@ -25,24 +25,28 @@ public class AppraisalCycleController {
 
     // GET ALL
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public List<AppraisalCycle> getAllCycles() {
         return service.getAllCycles();
     }
 
     // GET BY ID
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public AppraisalCycle getCycle(@PathVariable Long id) {
         return service.getCycleById(id);
     }
 
     // UPDATE
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('HR')")
     public AppraisalCycle updateCycle(@PathVariable Long id, @RequestBody AppraisalCycle cycle) {
         return service.updateCycle(id, cycle);
     }
 
     // DELETE
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('HR')")
     public String deleteCycle(@PathVariable Long id) {
         service.deleteCycle(id);
         return "Cycle deleted successfully!";

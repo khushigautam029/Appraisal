@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100">
+  <defs>
+    <style>
+      .bg { fill: #f7fafc; }
+      .title { font: 700 34px Arial, sans-serif; fill: #102a43; }
+      .subtitle { font: 16px Arial, sans-serif; fill: #52606d; }
+      .table { fill: #ffffff; stroke: #bcccdc; stroke-width: 2; rx: 8; }
+      .header { fill: #1f7a8c; }
+      .header-alt { fill: #334e68; }
+      .header-text { font: 700 18px Arial, sans-serif; fill: #ffffff; }
+      .field { font: 15px Consolas, "Courier New", monospace; fill: #243b53; }
+      .pk { fill: #d64545; font-weight: 700; }
+      .fk { fill: #0b7285; font-weight: 700; }
+      .relation { fill: none; stroke: #627d98; stroke-width: 2.5; marker-end: url(#arrow); }
+      .relation-label { font: 13px Arial, sans-serif; fill: #334e68; }
+      .note { font: 14px Arial, sans-serif; fill: #52606d; }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#627d98"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="1100"/>
+  <text class="title" x="800" y="55" text-anchor="middle">Appraisal System Database Schema</text>
+  <text class="subtitle" x="800" y="83" text-anchor="middle">Generated from Spring JPA entity classes</text>
+
+  <!-- employees -->
+  <g transform="translate(610 185)">
+    <rect class="table" width="330" height="245"/>
+    <path class="header" d="M8 0 H322 A8 8 0 0 1 330 8 V45 H0 V8 A8 8 0 0 1 8 0 Z"/>
+    <text class="header-text" x="165" y="29" text-anchor="middle">employees</text>
+    <text class="field pk" x="22" y="75">PK id : Long</text>
+    <text class="field" x="22" y="103">name : String</text>
+    <text class="field" x="22" y="131">email : String UNIQUE</text>
+    <text class="field" x="22" y="159">status : String</text>
+    <text class="field" x="22" y="187">department : String</text>
+    <text class="field" x="22" y="215">designation : String</text>
+    <text class="field" x="22" y="237">manager : String</text>
+  </g>
+
+  <!-- appraisal_cycles -->
+  <g transform="translate(610 560)">
+    <rect class="table" width="330" height="190"/>
+    <path class="header" d="M8 0 H322 A8 8 0 0 1 330 8 V45 H0 V8 A8 8 0 0 1 8 0 Z"/>
+    <text class="header-text" x="165" y="29" text-anchor="middle">appraisal_cycles</text>
+    <text class="field pk" x="22" y="75">PK id : Long</text>
+    <text class="field" x="22" y="103">name : String</text>
+    <text class="field" x="22" y="131">startDate : LocalDate</text>
+    <text class="field" x="22" y="159">endDate : LocalDate</text>
+    <text class="field" x="22" y="181">status : String</text>
+  </g>
+
+  <!-- goals -->
+  <g transform="translate(95 155)">
+    <rect class="table" width="365" height="285"/>
+    <path class="header" d="M8 0 H357 A8 8 0 0 1 365 8 V45 H0 V8 A8 8 0 0 1 8 0 Z"/>
+    <text class="header-text" x="182.5" y="29" text-anchor="middle">goals</text>
+    <text class="field pk" x="22" y="75">PK id : Long</text>
+    <text class="field" x="22" y="103">title : String</text>
+    <text class="field" x="22" y="131">description : String</text>
+    <text class="field" x="22" y="159">targetDate : String</text>
+    <text class="field" x="22" y="187">managerRemarks : String</text>
+    <text class="field" x="22" y="215">employeeRemarks : String</text>
+    <text class="field" x="22" y="243">status : String</text>
+    <text class="field fk" x="22" y="271">FK employee_id, cycle_id</text>
+  </g>
+
+  <!-- reviews -->
+  <g transform="translate(1135 120)">
+    <rect class="table" width="370" height="360"/>
+    <path class="header" d="M8 0 H362 A8 8 0 0 1 370 8 V45 H0 V8 A8 8 0 0 1 8 0 Z"/>
+    <text class="header-text" x="185" y="29" text-anchor="middle">reviews</text>
+    <text class="field pk" x="22" y="75">PK id : Long</text>
+    <text class="field" x="22" y="103">rating : int</text>
+    <text class="field" x="22" y="131">remarks : String</text>
+    <text class="field" x="22" y="159">strengths : String</text>
+    <text class="field" x="22" y="187">improvements : String</text>
+    <text class="field" x="22" y="215">communication : String</text>
+    <text class="field" x="22" y="243">technicalSkills : String</text>
+    <text class="field" x="22" y="271">teamwork : String</text>
+    <text class="field" x="22" y="299">punctuality : String</text>
+    <text class="field" x="22" y="327">hrRating, hrRemarks</text>
+    <text class="field fk" x="22" y="351">FK employee_id, cycle_id</text>
+  </g>
+
+  <!-- self_evaluations -->
+  <g transform="translate(95 610)">
+    <rect class="table" width="365" height="250"/>
+    <path class="header" d="M8 0 H357 A8 8 0 0 1 365 8 V45 H0 V8 A8 8 0 0 1 8 0 Z"/>
+    <text class="header-text" x="182.5" y="29" text-anchor="middle">self_evaluations</text>
+    <text class="field pk" x="22" y="75">PK id : Long</text>
+    <text class="field" x="22" y="103">achievements : TEXT</text>
+    <text class="field" x="22" y="131">improvements : TEXT</text>
+    <text class="field" x="22" y="159">organizationWork : TEXT</text>
+    <text class="field" x="22" y="187">skills : TEXT</text>
+    <text class="field" x="22" y="215">status : String</text>
+    <text class="field fk" x="22" y="239">FK employee_id, cycle_id</text>
+  </g>
+
+  <!-- appraisals -->
+  <g transform="translate(1135 650)">
+    <rect class="table" width="370" height="185"/>
+    <path class="header" d="M8 0 H362 A8 8 0 0 1 370 8 V45 H0 V8 A8 8 0 0 1 8 0 Z"/>
+    <text class="header-text" x="185" y="29" text-anchor="middle">appraisals</text>
+    <text class="field pk" x="22" y="75">PK id : Long</text>
+    <text class="field" x="22" y="103">rating : int</text>
+    <text class="field" x="22" y="131">remarks : String</text>
+    <text class="field" x="22" y="159">decision : String</text>
+    <text class="field fk" x="22" y="181">FK employee_id</text>
+  </g>
+
+  <!-- reference/standalone -->
+  <g transform="translate(95 905)">
+    <rect class="table" width="330" height="150"/>
+    <path class="header-alt" d="M8 0 H322 A8 8 0 0 1 330 8 V45 H0 V8 A8 8 0 0 1 8 0 Z"/>
+    <text class="header-text" x="165" y="29" text-anchor="middle">users</text>
+    <text class="field pk" x="22" y="75">PK id : Long</text>
+    <text class="field" x="22" y="103">email : String UNIQUE</text>
+    <text class="field" x="22" y="131">password, role : String</text>
+  </g>
+
+  <g transform="translate(470 905)">
+    <rect class="table" width="330" height="150"/>
+    <path class="header-alt" d="M8 0 H322 A8 8 0 0 1 330 8 V45 H0 V8 A8 8 0 0 1 8 0 Z"/>
+    <text class="header-text" x="165" y="29" text-anchor="middle">managers</text>
+    <text class="field pk" x="22" y="75">PK id : Long</text>
+    <text class="field" x="22" y="103">name, department, designation</text>
+    <text class="field" x="22" y="131">email : String UNIQUE</text>
+  </g>
+
+  <g transform="translate(845 905)">
+    <rect class="table" width="330" height="150"/>
+    <path class="header-alt" d="M8 0 H322 A8 8 0 0 1 330 8 V45 H0 V8 A8 8 0 0 1 8 0 Z"/>
+    <text class="header-text" x="165" y="29" text-anchor="middle">departments</text>
+    <text class="field pk" x="22" y="75">PK id : Long</text>
+    <text class="field" x="22" y="103">name : String</text>
+  </g>
+
+  <g transform="translate(1220 905)">
+    <rect class="table" width="330" height="150"/>
+    <path class="header-alt" d="M8 0 H322 A8 8 0 0 1 330 8 V45 H0 V8 A8 8 0 0 1 8 0 Z"/>
+    <text class="header-text" x="165" y="29" text-anchor="middle">notifications</text>
+    <text class="field pk" x="22" y="75">PK id : Long</text>
+    <text class="field" x="22" y="103">userId, role, message, type</text>
+    <text class="field" x="22" y="131">isRead, createdAt</text>
+  </g>
+
+  <!-- relationships -->
+  <path class="relation" d="M460 285 C520 285 545 285 610 285"/>
+  <text class="relation-label" x="506" y="270">many goals per employee</text>
+
+  <path class="relation" d="M1135 292 C1060 292 1018 292 940 292"/>
+  <text class="relation-label" x="982" y="276">many reviews per employee</text>
+
+  <path class="relation" d="M1135 740 C1048 740 1018 400 940 360"/>
+  <text class="relation-label" x="1003" y="602">many appraisals per employee</text>
+
+  <path class="relation" d="M460 735 C545 735 555 420 610 365"/>
+  <text class="relation-label" x="491" y="592">many self evaluations per employee</text>
+
+  <path class="relation" d="M278 610 C380 535 505 620 610 645"/>
+  <text class="relation-label" x="380" y="552">many self evaluations per cycle</text>
+
+  <path class="relation" d="M278 440 C390 510 500 575 610 645"/>
+  <text class="relation-label" x="350" y="500">many goals per cycle</text>
+
+  <path class="relation" d="M1135 420 C1025 500 1020 620 940 645"/>
+  <text class="relation-label" x="1018" y="538">many reviews per cycle</text>
+
+  <text class="note" x="65" y="95">Legend: PK = Primary Key, FK = Foreign Key. Managers/departments are stored as separate tables, while employee.department and employee.manager are string fields in the current entity model.</text>
+</svg>

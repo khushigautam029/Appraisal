@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import {
-    FaBell,
-    FaChevronDown,
-    FaUserCircle,
+  FaBell,
+  FaChevronDown,
+  FaCog,
+  FaSignOutAlt,
+  FaUserCircle,
 } from "react-icons/fa";
+
 import { useNavigate } from "react-router-dom";
 import { getNotifications } from "../services/notificationService";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
   const [, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
@@ -25,21 +27,29 @@ const Navbar = () => {
     email: localStorage.getItem("userEmail") || "user@example.com",
   };
 
-  // ✅ Logout
+  // LOGOUT
   const handleLogout = () => {
     localStorage.clear();
     navigate("/login");
   };
 
-  // ✅ Fetch Notifications
+  // FETCH NOTIFICATIONS
   const fetchNotifications = async () => {
     try {
       const response = await getNotifications(userId, role);
-      // Ensure data is an array
-      const data = Array.isArray(response) ? response : (response?.data ? response.data : []);
+
+      const data = Array.isArray(response)
+        ? response
+        : response?.data
+        ? response.data
+        : [];
+
       setNotifications(data);
 
-      const unread = Array.isArray(data) ? data.filter((n) => !n.read).length : 0;
+      const unread = Array.isArray(data)
+        ? data.filter((n) => !n.read).length
+        : 0;
+
       setUnreadCount(unread);
     } catch (err) {
       console.error(err);
@@ -49,39 +59,66 @@ const Navbar = () => {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchNotifications();
+
     const interval = setInterval(fetchNotifications, 5000);
+
     return () => clearInterval(interval);
   }, [role]);
 
-  // ✅ Outside click
+  // OUTSIDE CLICK
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target)
+      ) {
         setOpen(false);
-        setShowSettings(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    return () =>
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
   }, []);
 
   return (
-    <div className="bg-white border-b px-6 py-2 flex justify-end items-center shadow-sm sticky top-0 z-50">
-
-      {/* RIGHT SIDE */}
+    <div
+      className="
+        sticky top-0 z-50
+        bg-white/80 backdrop-blur-md
+        border-b border-blue-100
+        px-6 py-3
+        flex justify-end items-center
+        shadow-md
+      "
+    >
+      {/* RIGHT SECTION */}
       <div className="flex items-center gap-4">
 
-        {/* 🔁 ROLE SWITCH */}
+        {/* ROLE SWITCH */}
         {actualRole === "MANAGER" && role === "MANAGER" && (
           <button
             onClick={() => {
               localStorage.setItem("role", "EMPLOYEE");
               window.location.href = "/sample-appraisal";
             }}
-            className="text-xs px-3 py-1 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
+            className="
+              text-xs font-medium
+              px-4 py-2
+              rounded-full
+              bg-gradient-to-r from-blue-100 to-indigo-100
+              text-blue-700
+              shadow-sm
+              hover:shadow-md
+              hover:scale-105
+              transition-all duration-300
+            "
           >
-            Switch to Employee
+            Employee Mode
           </button>
         )}
 
@@ -91,107 +128,166 @@ const Navbar = () => {
               localStorage.setItem("role", "MANAGER");
               window.location.href = "/manager-dashboard";
             }}
-            className="text-xs px-3 py-1 rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition"
+            className="
+              text-xs font-medium
+              px-4 py-2
+              rounded-full
+              bg-gradient-to-r from-green-100 to-emerald-100
+              text-green-700
+              shadow-sm
+              hover:shadow-md
+              hover:scale-105
+              transition-all duration-300
+            "
           >
             Manager Mode
           </button>
         )}
 
-        {/* 🔔 NOTIFICATIONS */}
+        {/* NOTIFICATIONS */}
         <div
           onClick={() => navigate("/notifications")}
-          className="relative cursor-pointer p-2 rounded-full hover:bg-gray-100 transition"
+          className="
+            relative cursor-pointer
+            w-11 h-11
+            rounded-2xl
+            bg-white
+            flex items-center justify-center
+            shadow-md
+            hover:shadow-lg
+            hover:bg-blue-50
+            transition-all duration-300
+          "
         >
-          <FaBell className="text-gray-600 text-lg" />
+          <FaBell className="text-gray-600 text-[17px]" />
 
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] px-1.5 py-[1px] rounded-full">
+            <span
+              className="
+                absolute -top-1 -right-1
+                min-w-[18px] h-[18px]
+                px-1
+                flex items-center justify-center
+                bg-red-500
+                text-white
+                text-[10px]
+                rounded-full
+                shadow
+              "
+            >
               {unreadCount}
             </span>
           )}
         </div>
 
-        {/* 👤 PROFILE */}
+        {/* PROFILE */}
         <div className="relative" ref={dropdownRef}>
           <div
-            onClick={() => {
-              setOpen(!open);
-              setShowSettings(false);
-            }}
-            className="flex items-center gap-2 cursor-pointer px-2 py-1 rounded hover:bg-gray-100 transition"
+            onClick={() => setOpen(!open)}
+            className="
+              flex items-center gap-3
+              px-3 py-2
+              rounded-2xl
+              bg-white
+              shadow-md
+              cursor-pointer
+              hover:shadow-lg
+              hover:bg-blue-50
+              transition-all duration-300
+            "
           >
-            <FaUserCircle className="text-2xl text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">
-              {user.name}
-            </span>
-            <FaChevronDown className="text-xs text-gray-500" />
+            <FaUserCircle className="text-3xl text-blue-600" />
+
+            <div className="hidden sm:block">
+              <p className="text-xs font-semibold text-gray-800">
+                {user.name}
+              </p>
+
+              <p className="text-[10px] text-gray-500">
+                {role}
+              </p>
+            </div>
+
+            <FaChevronDown className="text-[10px] text-gray-500" />
           </div>
 
-          {/* 🔽 DROPDOWN */}
+          {/* DROPDOWN */}
           {open && (
-            <div className="absolute right-0 mt-2 w-64 bg-white border rounded-xl shadow-lg overflow-hidden">
+            <div
+              className="
+                absolute right-0 mt-3
+                w-72
+                bg-white/95 backdrop-blur-md
+                border border-blue-100
+                rounded-3xl
+                shadow-2xl
+                overflow-hidden
+                animate-fadeIn
+              "
+            >
+              {/* USER INFO */}
+              <div
+                className="
+                  px-5 py-4
+                  bg-gradient-to-r from-blue-50 to-indigo-50
+                  border-b border-blue-100
+                "
+              >
+                <div className="flex items-center gap-3">
+                  <FaUserCircle className="text-4xl text-blue-600" />
 
-              {!showSettings ? (
-                <>
-                  {/* USER INFO */}
-                  <div className="px-4 py-3 border-b bg-gray-50">
-                    <p className="font-semibold text-sm">{user.name}</p>
-                    <p className="text-xs text-gray-500">{user.email}</p>
+                  <div>
+                    <p className="text-sm font-bold text-gray-800">
+                      {user.name}
+                    </p>
+
+                    <p className="text-xs text-gray-500">
+                      {user.email}
+                    </p>
                   </div>
-
-                  {/* OPTIONS */}
-                  <div className="flex flex-col text-sm">
-                    <div
-                      onClick={() => {
-                        navigate("/settings");
-                        setOpen(false);
-                      }}
-                      className="px-4 py-2 text-left hover:bg-gray-100 cursor-pointer"
-                    >
-                      Settings
-                    </div>
-
-                    <button
-                      onClick={handleLogout}
-                      className="px-4 py-2 text-left text-red-500 hover:bg-red-50"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <div className="p-4 space-y-3 text-sm">
-
-                  <p className="font-semibold">Change Password</p>
-
-                  <input
-                    type="password"
-                    placeholder="Current Password"
-                    className="w-full border px-2 py-1.5 rounded"
-                  />
-                  <input
-                    type="password"
-                    placeholder="New Password"
-                    className="w-full border px-2 py-1.5 rounded"
-                  />
-                  <input
-                    type="password"
-                    placeholder="Confirm Password"
-                    className="w-full border px-2 py-1.5 rounded"
-                  />
-
-                  <button className="w-full bg-blue-600 text-white py-1.5 rounded hover:bg-blue-700 transition">
-                    Update Password
-                  </button>
-
-                  <button
-                    onClick={() => setShowSettings(false)}
-                    className="text-xs text-blue-500"
-                  >
-                    ← Back
-                  </button>
                 </div>
-              )}
+              </div>
+
+              {/* MENU */}
+              <div className="p-3 space-y-2">
+
+                <button
+                  onClick={() => {
+                    navigate("/settings");
+                    setOpen(false);
+                  }}
+                  className="
+                    w-full flex items-center gap-3
+                    px-4 py-3
+                    rounded-2xl
+                    text-xs font-medium
+                    text-gray-700
+                    hover:bg-blue-100
+                    hover:text-blue-700
+                    transition-all duration-300
+                  "
+                >
+                  <FaCog />
+                  Settings
+                </button>
+
+                <button
+                  onClick={handleLogout}
+                  className="
+                    w-full flex items-center gap-3
+                    px-4 py-3
+                    rounded-2xl
+                    text-xs font-medium
+                    text-red-500
+                    hover:bg-red-50
+                    transition-all duration-300
+                  "
+                >
+                  <FaSignOutAlt />
+                  Logout
+                </button>
+
+              </div>
             </div>
           )}
         </div>

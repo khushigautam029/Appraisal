@@ -1,15 +1,16 @@
 package com.example.appraisal_system.service;
 
-import com.example.appraisal_system.entity.AppraisalCycle;
-import com.example.appraisal_system.entity.Employee;
-import com.example.appraisal_system.entity.Manager;
-import com.example.appraisal_system.repository.AppraisalCycleRepository;
-import com.example.appraisal_system.repository.EmployeeRepository;
-import com.example.appraisal_system.repository.ManagerRepository;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.example.appraisal_system.entity.AppraisalCycle;
+// import com.example.appraisal_system.entity.Employee;
+// import com.example.appraisal_system.entity.Manager;
+import com.example.appraisal_system.repository.AppraisalCycleRepository;
+import com.example.appraisal_system.repository.EmployeeRepository;
+import com.example.appraisal_system.repository.ManagerRepository;
 
 @Service
 public class AppraisalCycleService {
@@ -32,7 +33,7 @@ public class AppraisalCycleService {
     // Create
     public AppraisalCycle createCycle(AppraisalCycle cycle) {
         // If the new cycle is active, deactivate all others
-        if ("Active".equals(cycle.getStatus())) {
+        if ("Active".equalsIgnoreCase(cycle.getStatus())) {
             deactivateAllCycles();
         }
 
@@ -56,7 +57,7 @@ public class AppraisalCycleService {
 
     private void deactivateAllCycles() {
         List<AppraisalCycle> activeCycles = repository.findAll().stream()
-                .filter(c -> "Active".equals(c.getStatus()))
+                .filter(c -> "Active".equalsIgnoreCase(c.getStatus()))
                 .toList();
         for (AppraisalCycle c : activeCycles) {
             c.setStatus("Inactive");
@@ -79,7 +80,7 @@ public class AppraisalCycleService {
         AppraisalCycle cycle = repository.findById(id).orElseThrow();
 
         // If status is being changed to Active, deactivate others
-        if ("Active".equals(updatedCycle.getStatus()) && !"Active".equals(cycle.getStatus())) {
+        if ("Active".equalsIgnoreCase(updatedCycle.getStatus()) && !"Active".equalsIgnoreCase(cycle.getStatus())) {
             deactivateAllCycles();
         }
 

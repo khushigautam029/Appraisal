@@ -1,15 +1,18 @@
 import api from "./api";
 
+const normalizeCycles = (data) => {
+  if (Array.isArray(data)) return data;
+  if (data && Array.isArray(data.data)) return data.data;
+  if (data && Array.isArray(data.content)) return data.content;
+  return [];
+};
+
 export const getActiveCycle = async () => {
   try {
     const res = await api.get("/cycles");
-    let cycles = res.data;
-    // Handle if response is wrapped in a data property
-    if (cycles && typeof cycles === 'object' && !Array.isArray(cycles) && cycles.data) {
-      cycles = cycles.data;
-    }
+    const cycles = normalizeCycles(res.data);
     if (Array.isArray(cycles) && cycles.length > 0) {
-      const active = cycles.find(c => c.status === "Active");
+      const active = cycles.find(c => c.status?.toLowerCase() === "active");
       const cycle = active || cycles[cycles.length - 1];
       if (cycle) {
         localStorage.setItem("activeCycleId", cycle.id);
@@ -23,8 +26,12 @@ export const getActiveCycle = async () => {
   }
 };
 
-export const getAllCycles = () => {
-  return api.get("/cycles");
+export const getAllCycles = async () => {
+  const res = await api.get("/cycles");
+  return {
+    ...res,
+    data: normalizeCycles(res.data),
+  };
 };
 
 export const createCycle = (cycleData) => {

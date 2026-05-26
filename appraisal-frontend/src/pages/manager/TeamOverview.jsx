@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { FaBuilding, FaExclamationCircle, FaSpinner, FaStar, FaTimes, FaUsers, FaUserTie } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
-import { getEmployees, getGoalsByEmployee, getReviews, getSelfEvaluationByEmployee } from "../../services/managerService";
+import { getActiveCycle } from "../../services/cycleService";
+import { getGoalsByEmployee, getReports, getReviewByEmployeeAndCycle, getSelfEvaluationByEmployeeAndCycle } from "../../services/managerService";
 
 const TeamOverview = () => {
   const location = useLocation();
 
   const [employees, setEmployees] = useState([]);
-  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshKey] = useState(0);
+  const [activeCycle, setActiveCycle] = useState(null);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,19 +18,23 @@ const TeamOverview = () => {
   const [modalLoading, setModalLoading] = useState(false);
   const [employeeGoals, setEmployeeGoals] = useState([]);
   const [employeeEvaluation, setEmployeeEvaluation] = useState(null);
+  const [employeeReview, setEmployeeReview] = useState(null);
 
   const fetchData = async () => {
     try {
       setLoading(true);
       const managerName = localStorage.getItem("userName");
+      const cycle = await getActiveCycle();
 
-      const [empRes, reviewRes] = await Promise.all([
-        getEmployees(managerName),
-        getReviews(),
-      ]);
+      setActiveCycle(cycle);
 
+      if (!cycle) {
+        setEmployees([]);
+        return;
+      }
+
+      const empRes = await getReports(managerName, cycle.id);
       setEmployees(empRes.data || []);
-      setReviews(reviewRes.data || []);
     } catch (err) {
       console.error("Error fetching team:", err);
     } finally {
@@ -47,19 +52,37 @@ const TeamOverview = () => {
     setModalLoading(true);
     setEmployeeGoals([]);
     setEmployeeEvaluation(null);
+    setEmployeeReview(null);
 
     try {
-      const [goalsRes, evalRes] = await Promise.allSettled([
+      const [goalsRes, evalRes, reviewRes] = await Promise.allSettled([
         getGoalsByEmployee(emp.id),
-        getSelfEvaluationByEmployee(emp.id)
+        activeCycle
+          ? getSelfEvaluationByEmployeeAndCycle(emp.id, activeCycle.id)
+          : Promise.resolve({ data: null }),
+        activeCycle
+          ? getReviewByEmployeeAndCycle(emp.id, activeCycle.id)
+          : Promise.resolve({ data: null }),
       ]);
 
       if (goalsRes.status === "fulfilled" && goalsRes.value) {
-        setEmployeeGoals(goalsRes.value.data || []);
+        const goals = goalsRes.value.data || [];
+        setEmployeeGoals(
+          activeCycle
+            ? goals.filter((goal) => Number(goal.cycle?.id) === Number(activeCycle.id))
+            : goals
+        );
       }
       
       if (evalRes.status === "fulfilled" && evalRes.value) {
-        setEmployeeEvaluation(evalRes.value.data || null);
+        const evaluation = evalRes.value.data || null;
+        setEmployeeEvaluation(
+          evaluation?.status?.toUpperCase() === "SUBMITTED" ? evaluation : null
+        );
+      }
+
+      if (reviewRes.status === "fulfilled" && reviewRes.value) {
+        setEmployeeReview(reviewRes.value.data || null);
       }
     } catch (err) {
       console.error("Error fetching employee details", err);
@@ -70,16 +93,12 @@ const TeamOverview = () => {
 
   // 🔹 Merge Data
   const mergedData = employees.map((emp) => {
-    const review = reviews.find(
-      (r) => r?.employee?.id === emp.id
-    );
-
     const mappedStatus = emp.status?.toUpperCase() || "PENDING";
 
     return {
       ...emp,
-      rating: review?.rating || 0,
-      review: review || null,
+      rating: mappedStatus === "COMPLETED" ? emp.rating || 0 : 0,
+      review: null,
       status: mappedStatus,
     };
   });
@@ -346,14 +365,14 @@ const TeamOverview = () => {
                   {/* Manager Review */}
                   <div>
                     <h3 className="text-lg font-bold text-slate-800 mb-4">Manager Review Feedback</h3>
-                    {selectedEmployee.review ? (
+                    {employeeReview ? (
                       <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-5">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
                           <div>
                             <strong className="text-[11px] text-slate-500 uppercase tracking-wider block mb-1">Final Rating</strong>
                             <div className="flex gap-1.5 text-amber-400">
                               {[1, 2, 3, 4, 5].map(s => (
-                                <FaStar key={s} className={`text-xl transition-all ${s <= selectedEmployee.rating ? 'opacity-100 drop-shadow-sm' : 'text-slate-200'}`} />
+                                <FaStar key={s} className={`text-xl transition-all ${s <= (employeeReview.rating || 0) ? 'opacity-100 drop-shadow-sm' : 'text-slate-200'}`} />
                               ))}
                             </div>
                           </div>
@@ -374,17 +393,17 @@ const TeamOverview = () => {
                         <div className="grid md:grid-cols-2 gap-6 pt-2">
                           <div className="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100/50">
                             <strong className="text-[11px] text-emerald-600 uppercase tracking-wider block mb-2 font-bold">Strengths</strong>
-                            <p className="text-slate-700 text-sm whitespace-pre-wrap">{selectedEmployee.review.strengths || 'Not provided'}</p>
+                            <p className="text-slate-700 text-sm whitespace-pre-wrap">{employeeReview.strengths || 'Not provided'}</p>
                           </div>
                           
                           <div className="bg-amber-50/50 p-4 rounded-2xl border border-amber-100/50">
                             <strong className="text-[11px] text-amber-600 uppercase tracking-wider block mb-2 font-bold">Areas for Improvement</strong>
-                            <p className="text-slate-700 text-sm whitespace-pre-wrap">{selectedEmployee.review.improvements || 'Not provided'}</p>
+                            <p className="text-slate-700 text-sm whitespace-pre-wrap">{employeeReview.improvements || 'Not provided'}</p>
                           </div>
 
                           <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 md:col-span-2">
                             <strong className="text-[11px] text-slate-500 uppercase tracking-wider block mb-2 font-bold">General Remarks</strong>
-                            <p className="text-slate-700 text-sm whitespace-pre-wrap">{selectedEmployee.review.remarks || 'Not provided'}</p>
+                            <p className="text-slate-700 text-sm whitespace-pre-wrap">{employeeReview.remarks || 'Not provided'}</p>
                           </div>
                         </div>
 
@@ -392,19 +411,19 @@ const TeamOverview = () => {
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-slate-100">
                           <div>
                             <span className="text-[10px] text-slate-400 block uppercase tracking-wider font-bold mb-1">Communication</span>
-                            <span className="text-sm font-semibold text-slate-700">{selectedEmployee.review.communication || 'N/A'}</span>
+                            <span className="text-sm font-semibold text-slate-700">{employeeReview.communication || 'N/A'}</span>
                           </div>
                           <div>
                             <span className="text-[10px] text-slate-400 block uppercase tracking-wider font-bold mb-1">Tech Skills</span>
-                            <span className="text-sm font-semibold text-slate-700">{selectedEmployee.review.technicalSkills || 'N/A'}</span>
+                            <span className="text-sm font-semibold text-slate-700">{employeeReview.technicalSkills || 'N/A'}</span>
                           </div>
                           <div>
                             <span className="text-[10px] text-slate-400 block uppercase tracking-wider font-bold mb-1">Teamwork</span>
-                            <span className="text-sm font-semibold text-slate-700">{selectedEmployee.review.teamwork || 'N/A'}</span>
+                            <span className="text-sm font-semibold text-slate-700">{employeeReview.teamwork || 'N/A'}</span>
                           </div>
                           <div>
                             <span className="text-[10px] text-slate-400 block uppercase tracking-wider font-bold mb-1">Punctuality</span>
-                            <span className="text-sm font-semibold text-slate-700">{selectedEmployee.review.punctuality || 'N/A'}</span>
+                            <span className="text-sm font-semibold text-slate-700">{employeeReview.punctuality || 'N/A'}</span>
                           </div>
                         </div>
 

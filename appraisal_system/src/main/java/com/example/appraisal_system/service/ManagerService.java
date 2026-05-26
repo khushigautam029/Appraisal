@@ -1,16 +1,23 @@
 package com.example.appraisal_system.service;
 
-import com.example.appraisal_system.dto.ManagerReportDTO;
-import com.example.appraisal_system.dto.TeamMemberDTO;
-import com.example.appraisal_system.entity.*;
-import com.example.appraisal_system.repository.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+// import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.example.appraisal_system.dto.ManagerReportDTO;
+import com.example.appraisal_system.dto.TeamMemberDTO;
+import com.example.appraisal_system.entity.Employee;
+import com.example.appraisal_system.entity.Goal;
+import com.example.appraisal_system.entity.Review;
+import com.example.appraisal_system.entity.SelfEvaluation;
+import com.example.appraisal_system.repository.EmployeeRepository;
+import com.example.appraisal_system.repository.GoalRepository;
+import com.example.appraisal_system.repository.ReviewRepository;
+import com.example.appraisal_system.repository.SelfEvaluationRepository;
 
 @Service
 public class ManagerService {
