@@ -14,7 +14,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     
     Optional<Review> findByEmployeeIdAndCycleId(Long employeeId, Long cycleId);
 
-    @Query("SELECT r FROM Review r JOIN FETCH r.employee JOIN FETCH r.cycle")
+    long countByCycleId(Long cycleId);
+
+    @Query("SELECT r FROM Review r LEFT JOIN FETCH r.employee LEFT JOIN FETCH r.cycle")
     List<Review> findAllWithDetails();
 
     @Modifying

@@ -81,8 +81,6 @@ public class HrService {
         data.put("totalEmployees", employees.size());
         data.put("totalManagers", managers.size());
         data.put("totalDepartments", departments.size());
-        
-        // List<User> users = userRepository.findAll();
 
         // ✅ Add reports to manager data
         List<Map<String, Object>> managersWithReports = managers.stream().map(m -> {
@@ -93,11 +91,11 @@ public class HrService {
             mMap.put("department", m.getDepartment());
             mMap.put("designation", m.getDesignation());
             mMap.put("status", "ACTIVE");
-            
+
             // 🔥 FIND THIS MANAGER'S OWN SUPERVISOR
             Optional<Employee> myEmpRecord = employees.stream()
-                .filter(e -> e.getEmail().equals(m.getEmail()))
-                .findFirst();
+                    .filter(e -> e.getEmail().equals(m.getEmail()))
+                    .findFirst();
             mMap.put("manager", myEmpRecord.isPresent() ? myEmpRecord.get().getManager() : "Not Assigned");
 
             List<String> reports = employees.stream()
@@ -130,6 +128,10 @@ public class HrService {
 
     @Transactional
     public String addStaff(HrStaffRequest request) {
+        if (request.getPassword() == null || request.getPassword().trim().length() < 6) {
+            throw new IllegalArgumentException("Password must be at least 6 characters long");
+        }
+
         // Create User
         User user = new User();
         user.setEmail(request.getEmail());
@@ -143,6 +145,8 @@ public class HrService {
         user.setRole(role);
         userRepository.save(user);
 
+        String status = request.getStatus() != null && !request.getStatus().isBlank() ? request.getStatus() : "ACTIVE";
+
         // Create Employee/Manager record
         if (role.contains("EMPLOYEE")) {
             Employee employee = new Employee();
@@ -151,7 +155,7 @@ public class HrService {
             employee.setDepartment(request.getDepartment());
             employee.setDesignation(request.getDesignation());
             employee.setManager(request.getManager());
-            employee.setStatus(request.getStatus() != null ? request.getStatus() : "ACTIVE");
+            employee.setStatus(status);
             employeeRepository.save(employee);
         }
 
@@ -162,7 +166,7 @@ public class HrService {
             manager.setDepartment(request.getDepartment());
             manager.setDesignation(request.getDesignation());
             managerRepository.save(manager);
-            
+
             // 🔥 Also create/ensure Employee record exists so they can have a manager
             if (!role.contains("EMPLOYEE")) {
                 Employee employee = new Employee();
@@ -171,7 +175,7 @@ public class HrService {
                 employee.setDepartment(request.getDepartment());
                 employee.setDesignation(request.getDesignation());
                 employee.setManager(request.getManager()); // Assigned supervisor
-                employee.setStatus(request.getStatus() != null ? request.getStatus() : "ACTIVE");
+                employee.setStatus(status);
                 employeeRepository.save(employee);
             }
 
@@ -184,7 +188,8 @@ public class HrService {
 
     @Transactional
     public String updateStaff(Long id, HrStaffRequest request) {
-        System.out.println("=== updateStaff called === id=" + id + " email=" + request.getEmail() + " name=" + request.getName() + " role=" + request.getPrimaryRole() + " manager=" + request.getManager());
+        System.out.println("=== updateStaff called === id=" + id + " email=" + request.getEmail() + " name="
+                + request.getName() + " role=" + request.getPrimaryRole() + " manager=" + request.getManager());
 
         // Guard: email and name are mandatory
         if (request.getEmail() == null || request.getEmail().isBlank()) {
@@ -223,7 +228,7 @@ public class HrService {
         if (userList.isEmpty()) {
             userList = userRepository.findAllByEmail(request.getEmail());
         }
-        
+
         User user;
         if (!userList.isEmpty()) {
             user = userList.get(0);
@@ -231,12 +236,16 @@ public class HrService {
             // Self-healing: Create missing user record
             System.out.println("Self-healing: Creating missing user record for " + request.getEmail());
             user = new User();
-            String rawPass = request.getPassword() != null && !request.getPassword().isEmpty() ? request.getPassword() : "Welcome@123";
+            String rawPass = request.getPassword() != null && !request.getPassword().isEmpty() ? request.getPassword()
+                    : "Welcome@123";
             user.setPassword(passwordEncoder.encode(rawPass));
         }
 
         user.setEmail(request.getEmail());
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            if (request.getPassword().trim().length() < 6) {
+                throw new IllegalArgumentException("Password must be at least 6 characters long");
+            }
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
@@ -248,8 +257,9 @@ public class HrService {
         user.setRole(role);
         userRepository.save(user);
 
-        // 3. FLUSH and CLEAR the persistence context BEFORE touching Employee/Manager tables
-        //    This prevents stale/corrupt entities from causing PropertyValueException
+        // 3. FLUSH and CLEAR the persistence context BEFORE touching Employee/Manager
+        // tables
+        // This prevents stale/corrupt entities from causing PropertyValueException
         entityManager.flush();
         entityManager.clear();
 
@@ -266,9 +276,10 @@ public class HrService {
             if (oldName != null && !oldName.equals(request.getName())) {
                 employeeRepository.updateManagerName(oldName, request.getName());
             }
-            // For managers, we also need to update their OWN employee record if they report to someone
-            updateEmployeeRecord(oldEmail, request, "EMPLOYEE,MANAGER"); 
-            
+            // For managers, we also need to update their OWN employee record if they report
+            // to someone
+            updateEmployeeRecord(oldEmail, request, "EMPLOYEE,MANAGER");
+
             handleEmployeeAssignments(request.getName(), request.getEmployeeIds());
         }
 
@@ -276,15 +287,16 @@ public class HrService {
     }
 
     private void handleEmployeeAssignments(String managerName, List<Long> employeeIds) {
-        if (employeeIds == null) return;
-        
+        if (employeeIds == null)
+            return;
+
         // Clear persistence context before bulk operations to prevent stale cache
         entityManager.flush();
         entityManager.clear();
-        
+
         // Unassign everyone currently reporting to THIS manager name (safety reset)
         employeeRepository.nullifyManager(managerName);
-        
+
         // Assign requested ones (persistence context is clean now)
         for (Long empId : employeeIds) {
             employeeRepository.findById(empId).ifPresent(emp -> {
@@ -297,7 +309,7 @@ public class HrService {
     @Transactional
     public String deleteStaff(Long id) {
         System.out.println("=== deleteStaff called === ID: " + id);
-        
+
         String email = null;
         String managerName = null;
         boolean deletedSomething = false;
@@ -308,13 +320,13 @@ public class HrService {
             Employee emp = empById.get();
             email = emp.getEmail();
             System.out.println("Targeting Employee ID: " + id + " Email: " + email);
-            
+
             // Clean up dependents
             appraisalRepository.deleteByEmployee(emp);
             goalRepository.deleteByEmployee(emp);
             reviewRepository.deleteByEmployee(emp);
             selfEvaluationRepository.deleteByEmployee(emp);
-            
+
             employeeRepository.delete(emp);
             deletedSomething = true;
         }
@@ -322,14 +334,15 @@ public class HrService {
         Optional<Manager> mgrById = managerRepository.findById(id);
         if (mgrById.isPresent()) {
             Manager mgr = mgrById.get();
-            if (email == null) email = mgr.getEmail();
+            if (email == null)
+                email = mgr.getEmail();
             managerName = mgr.getName();
             System.out.println("Targeting Manager ID: " + id + " Email: " + email);
-            
+
             if (managerName != null) {
                 employeeRepository.nullifyManager(managerName);
             }
-            
+
             managerRepository.delete(mgr);
             deletedSomething = true;
         }
@@ -337,9 +350,10 @@ public class HrService {
         Optional<User> userById = userRepository.findById(id);
         if (userById.isPresent()) {
             User user = userById.get();
-            if (email == null) email = user.getEmail();
+            if (email == null)
+                email = user.getEmail();
             System.out.println("Targeting User ID: " + id + " Email: " + email);
-            
+
             notificationRepository.deleteByUserId(user.getId());
             userRepository.delete(user);
             deletedSomething = true;
@@ -392,9 +406,13 @@ public class HrService {
             employee.setDepartment(request.getDepartment());
             employee.setDesignation(request.getDesignation());
             employee.setManager(request.getManager());
-            employee.setStatus(request.getStatus() != null ? request.getStatus() : "ACTIVE");
+            String targetStatus = request.getStatus();
+            if (targetStatus == null || targetStatus.isBlank()) {
+                targetStatus = employee.getStatus() != null ? employee.getStatus() : "ACTIVE";
+            }
+            employee.setStatus(targetStatus);
             employeeRepository.save(employee);
-            
+
             // Clean up other duplicates if they exist
             if (emps.size() > 1) {
                 for (int i = 1; i < emps.size(); i++) {
@@ -416,8 +434,8 @@ public class HrService {
             manager.setDepartment(request.getDepartment());
             manager.setDesignation(request.getDesignation());
             managerRepository.save(manager);
-            
-             // Clean up other duplicates if they exist
+
+            // Clean up other duplicates if they exist
             if (mgrs.size() > 1) {
                 for (int i = 1; i < mgrs.size(); i++) {
                     managerRepository.delete(mgrs.get(i));
@@ -475,8 +493,60 @@ public class HrService {
         return "Department deleted successfully.";
     }
 
-    public List<Review> getAllReviews() {
-        return reviewRepository.findAllWithDetails();
+    public List<Map<String, Object>> getAllReviewsWithDetails() {
+        List<Review> reviews = reviewRepository.findAllWithDetails();
+        return reviews.stream().map(review -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", review.getId());
+            map.put("rating", review.getRating());
+            map.put("remarks", review.getRemarks());
+            map.put("strengths", review.getStrengths());
+            map.put("improvements", review.getImprovements());
+            map.put("communication", review.getCommunication());
+            map.put("technicalSkills", review.getTechnicalSkills());
+            map.put("teamwork", review.getTeamwork());
+            map.put("punctuality", review.getPunctuality());
+            map.put("managerStatus", review.getManagerStatus());
+            map.put("hrRating", review.getHrRating());
+            map.put("hrRemarks", review.getHrRemarks());
+            map.put("finalDecision", review.getFinalDecision());
+
+            // Employee data with managerName field for frontend
+            if (review.getEmployee() != null) {
+                Employee emp = review.getEmployee();
+                Map<String, Object> empMap = new HashMap<>();
+                empMap.put("id", emp.getId());
+                empMap.put("name", emp.getName());
+                empMap.put("email", emp.getEmail());
+                empMap.put("department", emp.getDepartment());
+                empMap.put("designation", emp.getDesignation());
+                empMap.put("managerName", emp.getManager());
+                map.put("employee", empMap);
+
+                // Include self-evaluation data for the View Details modal
+                Long cycleId = review.getCycle() != null ? review.getCycle().getId() : null;
+                if (cycleId != null) {
+                    selfEvaluationRepository.findAllByEmployeeIdAndCycleIdOrderByIdDesc(emp.getId(), cycleId)
+                            .stream()
+                            .findFirst()
+                            .ifPresent(selfEval -> {
+                                map.put("achievements", selfEval.getAchievements());
+                                map.put("skills", selfEval.getSkills());
+                                map.put("organizationalWork", selfEval.getOrganizationWork());
+                            });
+                }
+            }
+
+            // Cycle data
+            if (review.getCycle() != null) {
+                Map<String, Object> cycleMap = new HashMap<>();
+                cycleMap.put("id", review.getCycle().getId());
+                cycleMap.put("name", review.getCycle().getName());
+                map.put("cycle", cycleMap);
+            }
+
+            return map;
+        }).toList();
     }
 
     @Transactional
@@ -496,31 +566,47 @@ public class HrService {
     }
 
     @Transactional
-    public Review submitHrReviewStatus(Long reviewId, Integer hrRating, String hrRemarks) {
-        System.out.println("=== HR Review Update === ID: " + reviewId + " Rating: " + hrRating);
-        
+    public Review submitHrReviewStatus(Long reviewId, Integer hrRating, String hrRemarks, String finalDecision) {
+        System.out.println(
+                "=== HR Review Update === ID: " + reviewId + " Rating: " + hrRating + " Decision: " + finalDecision);
+
         Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
         if (reviewOptional.isPresent()) {
             Review review = reviewOptional.get();
+            if (review.getHrRating() != null && review.getFinalDecision() != null
+                    && !review.getFinalDecision().isBlank()) {
+                throw new RuntimeException("HR review already completed for this employee.");
+            }
+            if (hrRating == null || hrRating < 1 || hrRating > 5) {
+                throw new RuntimeException("HR rating must be between 1 and 5.");
+            }
+            if (finalDecision == null || finalDecision.isBlank()) {
+                throw new RuntimeException("Final decision is required.");
+            }
+            if (!"Approved".equalsIgnoreCase(finalDecision) && !"Needs Rework".equalsIgnoreCase(finalDecision)) {
+                throw new RuntimeException("Final decision must be Approved or Needs Rework.");
+            }
+
             review.setHrRating(hrRating);
             review.setHrRemarks(hrRemarks);
+            review.setFinalDecision(finalDecision);
             Review savedReview = reviewRepository.save(review);
-            
+
             // 🔔 Notify Employee
             if (review.getEmployee() != null) {
                 String email = review.getEmployee().getEmail();
                 userRepository.findByEmail(email).ifPresent(u -> {
                     notificationService.createNotification(
-                        u.getId(),
-                        "EMPLOYEE",
-                        "✨ Your appraisal has been finalized by HR",
-                        "HR_REVIEW_COMPLETED"
-                    );
+                            u.getId(),
+                            "EMPLOYEE",
+                            "✨ Your appraisal has been finalized by HR",
+                            "HR_REVIEW_COMPLETED");
                 });
             }
-            
+
             return savedReview;
         }
         throw new RuntimeException("Review not found for id: " + reviewId);
     }
+
 }

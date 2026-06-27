@@ -55,8 +55,22 @@ export const getHrReviews = async () => {
   return res.data;
 };
 
-export const updateHrReview = async (id, hrRating, hrRemarks) => {
-  const res = await api.put(`/hr/reviews/${id}`, { hrRating, hrRemarks });
+export const updateHrReview = async (id, { hrRating, hrRemarks, finalDecision }) => {
+  const res = await api.put(`/hr/reviews/${id}`, {
+    hrRating,
+    hrRemarks,
+    finalDecision,
+  });
+  return res.data;
+};
+
+export const getSelfEvaluationByEmployee = async (empId) => {
+  const res = await api.get(`/evaluations/employee/${empId}`);
+  return res.data;
+};
+
+export const getSelfEvaluationByEmployeeAndCycle = async (empId, cycleId) => {
+  const res = await api.get(`/evaluations/employee/${empId}/cycle/${cycleId}`);
   return res.data;
 };
 

@@ -2,22 +2,41 @@ import api from "./api";
 
 // 🔹 Dashboard
 export const getDashboard = (managerName, cycleId) => {
-  return api.get(`/manager/dashboard?managerName=${managerName}${cycleId ? `&cycleId=${cycleId}` : ''}`);
+  return api.get(`/manager/dashboard`, {
+    params: {
+      managerName,
+      ...(cycleId ? { cycleId } : {}),
+    },
+  });
 };
 
 // 🔹 Team Status (Includes PENDING, SUBMITTED, COMPLETED statuses)
 export const getTeamStatus = (managerName, cycleId) => {
-  return api.get(`/manager/team-status?managerName=${managerName}&cycleId=${cycleId}`);
+  return api.get(`/manager/team-status`, {
+    params: {
+      managerName,
+      cycleId,
+    },
+  });
 };
 
 // 🔹 Detailed Reports
 export const getReports = (managerName, cycleId) => {
-  return api.get(`/manager/reports?managerName=${managerName}&cycleId=${cycleId}`);
+  return api.get(`/manager/reports`, {
+    params: {
+      managerName,
+      cycleId,
+    },
+  });
 };
 
 // 🔹 Legacy Employees (Team Overview)
 export const getEmployees = (managerName) => {
-  return api.get(`/manager/employees?managerName=${managerName}`);
+  return api.get(`/manager/employees`, {
+    params: {
+      managerName,
+    },
+  });
 };
 
 // 🔹 Delete Target
@@ -51,7 +70,11 @@ export const getTargets = () => {
 };
 
 export const getTargetsByManager = (managerName) => {
-  return api.get(`/api/goals/manager?managerName=${managerName}`);
+  return api.get(`/api/goals/manager`, {
+    params: {
+      managerName,
+    },
+  });
 };
 
 export const updateStatus = (id, status) => {

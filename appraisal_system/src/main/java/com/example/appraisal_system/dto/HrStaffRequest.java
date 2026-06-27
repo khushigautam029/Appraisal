@@ -17,8 +17,6 @@ public class HrStaffRequest {
     @Email(message = "Invalid email format")
     private String email;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
 
     @NotBlank(message = "Primary role is required")
@@ -26,15 +24,12 @@ public class HrStaffRequest {
 
     private String secondaryRole;
 
-    @NotBlank(message = "Designation is required")
     private String designation;
 
-    @NotBlank(message = "Department is required")
     private String department;
 
     private String manager;
 
-    @NotBlank(message = "Status is required")
     private String status;
 
     private List<Long> employeeIds;

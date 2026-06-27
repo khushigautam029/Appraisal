@@ -13,9 +13,13 @@ public interface SelfEvaluationRepository extends JpaRepository<SelfEvaluation, 
 
     List<SelfEvaluation> findByCycleId(Long cycleId);
 
+    long countByCycleId(Long cycleId);
+
     Optional<SelfEvaluation> findByEmployeeId(Long employeeId);
 
     Optional<SelfEvaluation> findByEmployeeIdAndCycleId(Long employeeId, Long cycleId);
+
+    List<SelfEvaluation> findAllByEmployeeIdAndCycleIdOrderByIdDesc(Long employeeId, Long cycleId);
 
     @Modifying
     @Transactional

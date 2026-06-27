@@ -1,127 +1,240 @@
 import {
-    FaBell,
-    FaPalette,
-    FaShieldAlt,
-    FaUserLock
+  FaBell,
+  FaCheckCircle,
+  FaPalette,
+  FaShieldAlt,
+  FaUserLock,
 } from "react-icons/fa";
 
 const Settings = () => {
-
   const user = {
     name: localStorage.getItem("userName") || "User",
-    email: localStorage.getItem("userEmail") || "user@example.com",
+    email:
+      localStorage.getItem("userEmail") ||
+      "user@example.com",
   };
 
   return (
-    <div className="p-1 bg-gray-100 min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-cyan-50 p-4 md:p-6">
 
-      {/* HEADER */}
-      <h1 className="text-2xl font-bold text-gray-800 mb-3">
-        Settings
-      </h1>
+      {/* 🔥 HEADER */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">
+          Settings
+        </h1>
 
+        <p className="text-sm text-gray-500 mt-1">
+          Manage your profile, security, and preferences
+        </p>
+      </div>
+
+      {/* 🔥 GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-        {/* 🔒 PROFILE (READ ONLY) */}
-        <div className="bg-white p-6 rounded-2xl shadow border">
-          <div className="flex items-center gap-2 mb-4">
-            <FaUserLock className="text-blue-600" />
-            <h2 className="text-lg font-semibold">Profile</h2>
-          </div>
+        {/* 🔒 PROFILE */}
+        <div className="relative overflow-hidden bg-white/80 backdrop-blur-md border border-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6">
 
-          <div className="space-y-4">
-            <input
-              value={user.name}
-              disabled
-              className="w-full border p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed"
-            />
+          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-full blur-3xl opacity-50"></div>
 
-            <input
-              value={user.email}
-              disabled
-              className="w-full border p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed"
-            />
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-6">
 
-            <p className="text-xs text-gray-400">
-              * Profile details are managed by HR/Admin
-            </p>
+              <div className="bg-gradient-to-br from-blue-500 to-cyan-400 p-3 rounded-2xl shadow-lg text-white">
+                <FaUserLock />
+              </div>
+
+              <div>
+                <h2 className="text-lg font-semibold text-gray-800">
+                  Profile
+                </h2>
+
+                <p className="text-xs text-gray-500">
+                  Read only information
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+
+              <div>
+                <label className="text-xs font-medium text-gray-500">
+                  Full Name
+                </label>
+
+                <input
+                  value={user.name}
+                  disabled
+                  className="w-full mt-1 bg-slate-100 border border-slate-200 p-3 rounded-2xl text-gray-600 cursor-not-allowed"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-gray-500">
+                  Email Address
+                </label>
+
+                <input
+                  value={user.email}
+                  disabled
+                  className="w-full mt-1 bg-slate-100 border border-slate-200 p-3 rounded-2xl text-gray-600 cursor-not-allowed"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-2 rounded-xl text-xs">
+                <FaCheckCircle />
+                Profile details are managed by HR/Admin
+              </div>
+
+            </div>
           </div>
         </div>
 
         {/* 🔐 SECURITY */}
-        <div className="bg-white p-6 rounded-2xl shadow border">
-          <div className="flex items-center gap-2 mb-4">
-            <FaShieldAlt className="text-red-500" />
-            <h2 className="text-lg font-semibold">Security</h2>
-          </div>
+        <div className="relative overflow-hidden bg-white/80 backdrop-blur-md border border-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6">
 
-          <div className="space-y-3">
-            <input
-              type="password"
-              placeholder="Current Password"
-              className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-400 outline-none"
-            />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-red-100 rounded-full blur-3xl opacity-50"></div>
 
-            <input
-              type="password"
-              placeholder="New Password"
-              className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-400 outline-none"
-            />
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-6">
 
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-400 outline-none"
-            />
+              <div className="bg-gradient-to-br from-red-500 to-pink-400 p-3 rounded-2xl shadow-lg text-white">
+                <FaShieldAlt />
+              </div>
 
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow">
-              Update Password
-            </button>
+              <div>
+                <h2 className="text-lg font-semibold text-gray-800">
+                  Security
+                </h2>
+
+                <p className="text-xs text-gray-500">
+                  Update your password securely
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+
+              <input
+                type="password"
+                placeholder="Current Password"
+                className="w-full border border-slate-200 p-3 rounded-2xl bg-white/70 focus:ring-2 focus:ring-blue-300 outline-none transition"
+              />
+
+              <input
+                type="password"
+                placeholder="New Password"
+                className="w-full border border-slate-200 p-3 rounded-2xl bg-white/70 focus:ring-2 focus:ring-blue-300 outline-none transition"
+              />
+
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                className="w-full border border-slate-200 p-3 rounded-2xl bg-white/70 focus:ring-2 focus:ring-blue-300 outline-none transition"
+              />
+
+              <button className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-3 rounded-2xl font-medium shadow-lg hover:scale-[1.02] hover:shadow-2xl transition-all duration-300">
+                Update Password
+              </button>
+
+            </div>
           </div>
         </div>
 
         {/* 🔔 NOTIFICATIONS */}
-        <div className="bg-white p-6 rounded-2xl shadow border">
-          <div className="flex items-center gap-2 mb-4">
-            <FaBell className="text-yellow-500" />
-            <h2 className="text-lg font-semibold">Notifications</h2>
-          </div>
+        <div className="relative overflow-hidden bg-white/80 backdrop-blur-md border border-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6">
 
-          <div className="space-y-3 text-sm">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" defaultChecked />
-              Email Notifications
-            </label>
+          <div className="absolute top-0 left-0 w-32 h-32 bg-yellow-100 rounded-full blur-3xl opacity-50"></div>
 
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" defaultChecked />
-              In-App Notifications
-            </label>
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-6">
 
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" />
-              Weekly Summary Report
-            </label>
+              <div className="bg-gradient-to-br from-yellow-400 to-orange-400 p-3 rounded-2xl shadow-lg text-white">
+                <FaBell />
+              </div>
+
+              <div>
+                <h2 className="text-lg font-semibold text-gray-800">
+                  Notifications
+                </h2>
+
+                <p className="text-xs text-gray-500">
+                  Customize alerts and updates
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4 text-sm">
+
+              <label className="flex items-center justify-between bg-slate-50 px-4 py-3 rounded-2xl cursor-pointer hover:bg-slate-100 transition">
+                <span className="text-gray-700">
+                  Email Notifications
+                </span>
+
+                <input type="checkbox" defaultChecked />
+              </label>
+
+              <label className="flex items-center justify-between bg-slate-50 px-4 py-3 rounded-2xl cursor-pointer hover:bg-slate-100 transition">
+                <span className="text-gray-700">
+                  In-App Notifications
+                </span>
+
+                <input type="checkbox" defaultChecked />
+              </label>
+
+              <label className="flex items-center justify-between bg-slate-50 px-4 py-3 rounded-2xl cursor-pointer hover:bg-slate-100 transition">
+                <span className="text-gray-700">
+                  Weekly Summary Report
+                </span>
+
+                <input type="checkbox" />
+              </label>
+
+            </div>
           </div>
         </div>
 
         {/* 🎨 PREFERENCES */}
-        <div className="bg-white p-6 rounded-2xl shadow border">
-          <div className="flex items-center gap-2 mb-4">
-            <FaPalette className="text-purple-500" />
-            <h2 className="text-lg font-semibold">Preferences</h2>
-          </div>
+        <div className="relative overflow-hidden bg-white/80 backdrop-blur-md border border-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6">
 
-          <div className="space-y-3 text-sm">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" />
-              Dark Mode
-            </label>
+          <div className="absolute bottom-0 right-0 w-32 h-32 bg-purple-100 rounded-full blur-3xl opacity-50"></div>
 
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" defaultChecked />
-              Auto Save Appraisal
-            </label>
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-6">
+
+              <div className="bg-gradient-to-br from-purple-500 to-pink-400 p-3 rounded-2xl shadow-lg text-white">
+                <FaPalette />
+              </div>
+
+              <div>
+                <h2 className="text-lg font-semibold text-gray-800">
+                  Preferences
+                </h2>
+
+                <p className="text-xs text-gray-500">
+                  Personalize your experience
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4 text-sm">
+
+              <label className="flex items-center justify-between bg-slate-50 px-4 py-3 rounded-2xl cursor-pointer hover:bg-slate-100 transition">
+                <span className="text-gray-700">
+                  Dark Mode
+                </span>
+
+                <input type="checkbox" />
+              </label>
+
+              <label className="flex items-center justify-between bg-slate-50 px-4 py-3 rounded-2xl cursor-pointer hover:bg-slate-100 transition">
+                <span className="text-gray-700">
+                  Auto Save Appraisal
+                </span>
+
+                <input type="checkbox" defaultChecked />
+              </label>
+
+            </div>
           </div>
         </div>
 

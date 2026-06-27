@@ -72,8 +72,8 @@ public class HrController {
     }
 
     @GetMapping("/reviews")
-    public ResponseEntity<List<Review>> getAllReviews() {
-        return ResponseEntity.ok(hrService.getAllReviews());
+    public ResponseEntity<List<Map<String, Object>>> getAllReviews() {
+        return ResponseEntity.ok(hrService.getAllReviewsWithDetails());
     }
 
     @PutMapping("/reviews/{id}")
@@ -83,8 +83,9 @@ public class HrController {
             
         Integer hrRating = payload.containsKey("hrRating") ? Integer.parseInt(payload.get("hrRating").toString()) : null;
         String hrRemarks = payload.containsKey("hrRemarks") ? payload.get("hrRemarks").toString() : null;
+        String finalDecision = payload.containsKey("finalDecision") ? payload.get("finalDecision").toString() : null;
         
-        Review updatedReview = hrService.submitHrReviewStatus(id, hrRating, hrRemarks);
+        Review updatedReview = hrService.submitHrReviewStatus(id, hrRating, hrRemarks, finalDecision);
         return ResponseEntity.ok(updatedReview);
     }
 

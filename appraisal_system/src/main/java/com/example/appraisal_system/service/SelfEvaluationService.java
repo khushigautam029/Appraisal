@@ -35,11 +35,20 @@ public class SelfEvaluationService {
         Employee employee = employeeRepository.findById(empId).orElseThrow();
         AppraisalCycle cycle = cycleRepository.findById(cycleId).orElseThrow();
 
-        evaluation.setEmployee(employee);
-        evaluation.setCycle(cycle);
-        evaluation.setStatus("DRAFT");
+        SelfEvaluation target = repository.findAllByEmployeeIdAndCycleIdOrderByIdDesc(empId, cycleId)
+                .stream()
+                .findFirst()
+                .orElse(evaluation);
 
-        return repository.save(evaluation);
+        target.setEmployee(employee);
+        target.setCycle(cycle);
+        target.setAchievements(evaluation.getAchievements());
+        target.setImprovements(evaluation.getImprovements());
+        target.setOrganizationWork(evaluation.getOrganizationWork());
+        target.setSkills(evaluation.getSkills());
+        target.setStatus("DRAFT");
+
+        return repository.save(target);
     }
 
     // SUBMIT
@@ -101,7 +110,9 @@ public class SelfEvaluationService {
 
     // GET BY EMPLOYEE AND CYCLE
     public Optional<SelfEvaluation> getByEmployeeAndCycle(Long empId, Long cycleId) {
-        return repository.findByEmployeeIdAndCycleId(empId, cycleId);
+        return repository.findAllByEmployeeIdAndCycleIdOrderByIdDesc(empId, cycleId)
+                .stream()
+                .findFirst();
     }
 
     // DELETE

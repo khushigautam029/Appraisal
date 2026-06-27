@@ -65,7 +65,11 @@ public class DashboardService {
         response.setPendingReviews(pending);
 
         // Self Appraisal Status for this cycle
-        SelfEvaluation selfEval = selfEvaluationRepository.findByEmployeeIdAndCycleId(employeeId, cycleId).orElse(null);
+        SelfEvaluation selfEval = selfEvaluationRepository
+                .findAllByEmployeeIdAndCycleIdOrderByIdDesc(employeeId, cycleId)
+                .stream()
+                .findFirst()
+                .orElse(null);
 
         // Review Status for this cycle
         Review review = reviewRepository.findByEmployeeIdAndCycleId(employeeId, cycleId).orElse(null);
@@ -92,7 +96,8 @@ public class DashboardService {
 
         // 🔹 3. HR Approval Status
         if (review != null && review.getHrRating() != null) {
-            response.setHrApprovalStatus("Approved");
+            response.setHrApprovalStatus(
+                    review.getFinalDecision() != null ? review.getFinalDecision() : "Approved");
             response.setAppraisalStatus("Completed");
         } else if (review != null) {
             response.setHrApprovalStatus("Pending Approval");
@@ -102,7 +107,11 @@ public class DashboardService {
             response.setAppraisalStatus(selfEval != null ? "In Progress" : "Not Started");
         }
         
-        response.setPromotionStatus("No");
+        if (review != null && "Approved".equalsIgnoreCase(review.getFinalDecision())) {
+            response.setPromotionStatus("Yes");
+        } else {
+            response.setPromotionStatus("No");
+        }
 
         return response;
     }

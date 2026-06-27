@@ -27,6 +27,7 @@ public class Review {
 
     private Integer hrRating;
     private String hrRemarks;
+    private String finalDecision;
 
     // Link to employee — exclude circular fields
     @ManyToOne(fetch = FetchType.EAGER)
@@ -76,6 +77,9 @@ public class Review {
 
     public String getHrRemarks() { return hrRemarks; }
     public void setHrRemarks(String hrRemarks) { this.hrRemarks = hrRemarks; }
+
+    public String getFinalDecision() { return finalDecision; }
+    public void setFinalDecision(String finalDecision) { this.finalDecision = finalDecision; }
 
     public Employee getEmployee() { return employee; }
     public void setEmployee(Employee employee) { this.employee = employee; }

@@ -6,7 +6,7 @@ const UserModal = ({ isOpen, onClose, onSave, userData, departments, managers })
     name: "",
     email: "",
     password: "",
-    primaryRole: "Employee",
+    primaryRole: "EMPLOYEE",
     secondaryRole: "None",
     designation: "",
     department: "",
@@ -17,14 +17,14 @@ const UserModal = ({ isOpen, onClose, onSave, userData, departments, managers })
   useEffect(() => {
     if (userData) {
       // Split roles if they are comma-separated
-      const roles = userData.role ? userData.role.split(",") : ["Employee"];
+      const roles = userData.role ? userData.role.split(",") : ["EMPLOYEE"];
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm({
         id: userData.id,
         name: userData.name || "",
         email: userData.email || "",
         password: "", // Don't pre-fill password
-        primaryRole: roles[0] || "Employee",
+        primaryRole: roles[0] || "EMPLOYEE",
         secondaryRole: roles[1] || "None",
         designation: userData.designation || "",
         department: userData.department || "",
@@ -36,7 +36,7 @@ const UserModal = ({ isOpen, onClose, onSave, userData, departments, managers })
         name: "",
         email: "",
         password: "",
-        primaryRole: "Employee",
+        primaryRole: "EMPLOYEE",
         secondaryRole: "None",
         designation: "",
         department: "",

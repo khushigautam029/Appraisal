@@ -23,6 +23,7 @@ const AddEmployee = () => {
     designation: "",
     department: "",
     manager: "",
+    status: "ACTIVE",
   });
 
   useEffect(() => {
@@ -53,6 +54,7 @@ const AddEmployee = () => {
       designation: "",
       department: "",
       manager: "",
+      status: "ACTIVE",
     });
     setShowForm(true);
   };
@@ -69,6 +71,7 @@ const AddEmployee = () => {
       designation: emp.designation || "",
       department: emp.department || "",
       manager: emp.manager || "",
+      status: emp.status || "ACTIVE",
     });
     setShowForm(true);
   };

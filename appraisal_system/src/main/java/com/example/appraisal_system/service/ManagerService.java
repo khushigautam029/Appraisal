@@ -51,7 +51,10 @@ public class ManagerService {
                 remarks = review.get().getRemarks();
             } else {
                 // Check if SelfEvaluation is submitted
-                Optional<SelfEvaluation> selfEval = selfEvalRepo.findByEmployeeIdAndCycleId(emp.getId(), cycleId);
+                Optional<SelfEvaluation> selfEval = selfEvalRepo
+                        .findAllByEmployeeIdAndCycleIdOrderByIdDesc(emp.getId(), cycleId)
+                        .stream()
+                        .findFirst();
                 if (selfEval.isPresent() && "SUBMITTED".equals(selfEval.get().getStatus())) {
                     status = "SUBMITTED";
                 }
@@ -85,7 +88,10 @@ public class ManagerService {
                 status = "COMPLETED";
             } else {
                 // Check if SelfEvaluation is submitted (SUBMITTED)
-                Optional<SelfEvaluation> selfEval = selfEvalRepo.findByEmployeeIdAndCycleId(emp.getId(), cycleId);
+                Optional<SelfEvaluation> selfEval = selfEvalRepo
+                        .findAllByEmployeeIdAndCycleIdOrderByIdDesc(emp.getId(), cycleId)
+                        .stream()
+                        .findFirst();
                 if (selfEval.isPresent() && "SUBMITTED".equals(selfEval.get().getStatus())) {
                     status = "SUBMITTED";
                 }

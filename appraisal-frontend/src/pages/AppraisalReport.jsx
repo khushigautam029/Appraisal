@@ -123,10 +123,10 @@ const AppraisalReport = () => {
 
   return (
 
-    <div className="min-h-screen bg-gray-50 px-2 py-4 space-y-8 max-w-6xl mx-auto">
+    <div className="min-h-screen bg-white-50 px-2 py-4 space-y-8 max-w-6xl mx-auto">
 
       {/* HEADER */}
-      <div className="flex justify-between items-center bg-white p-5 rounded-xl shadow-sm border">
+      <div className="flex justify-between items-center bg-blue-50 p-5 rounded-xl shadow-sm border">
         <h1 className="text-2xl font-semibold text-gray-800">
           Appraisal Report
         </h1>
@@ -175,7 +175,7 @@ const AppraisalReport = () => {
         <div className="bg-white rounded-xl shadow border overflow-hidden">
 
           {/* INFO BAR */}
-          <div className="flex justify-between text-sm text-gray-600 px-6 py-3 border-b bg-gray-50">
+          <div className="flex justify-between text-sm text-gray-600 px-6 py-3 border-b bg-violet-100">
             <span><b>Name:</b> {employeeName}</span>
             <span><b>Submitted:</b> {new Date().toLocaleDateString()}</span>
             <span><b>Start:</b> {selectedCycleObj?.startDate}</span>
@@ -330,10 +330,6 @@ const AppraisalReport = () => {
     </div>
   );
 };
-
-
-
-
 
 /* STATUS BOX */
 const StatusBox = ({ title, description, color }) => {

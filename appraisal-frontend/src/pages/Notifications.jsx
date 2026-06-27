@@ -1,13 +1,22 @@
 import { useEffect, useState } from "react";
-import { FaBell, FaCheck, FaExclamationTriangle, FaInfoCircle } from "react-icons/fa";
+import {
+  FaBell,
+  FaCheck,
+  FaCheckCircle,
+  FaExclamationTriangle,
+  FaInfoCircle,
+} from "react-icons/fa";
 import { getActiveCycle } from "../services/cycleService";
-import { getNotifications, markAsRead } from "../services/notificationService";
+import {
+  getNotifications,
+  markAsRead,
+} from "../services/notificationService";
 
 const Notifications = ({ setNotificationCount }) => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [virtualDeadlineNotes, setVirtualDeadlineNotes] = useState([]);
-
+  const [virtualDeadlineNotes, setVirtualDeadlineNotes] =
+    useState([]);
 
   // 🔁 CHECK DEADLINES
   const checkDeadlines = async () => {
@@ -17,14 +26,19 @@ const Notifications = ({ setNotificationCount }) => {
     const now = new Date();
     const end = new Date(cycle.endDate);
 
-    if (now >= end || (end - now) < (7 * 24 * 60 * 60 * 1000)) {
-      setVirtualDeadlineNotes([{
-        id: "virtual_deadline",
-        message: `Deadline Reminder: Appraisal Cycle '${cycle.name}' ends on ${cycle.endDate}.`,
-        type: "WARNING",
-        read: false,
-        createdAt: new Date().toISOString()
-      }]);
+    if (
+      now >= end ||
+      end - now < 7 * 24 * 60 * 60 * 1000
+    ) {
+      setVirtualDeadlineNotes([
+        {
+          id: "virtual_deadline",
+          message: `Deadline Reminder: Appraisal Cycle '${cycle.name}' ends on ${cycle.endDate}.`,
+          type: "WARNING",
+          read: false,
+          createdAt: new Date().toISOString(),
+        },
+      ]);
     } else {
       setVirtualDeadlineNotes([]);
     }
@@ -34,29 +48,31 @@ const Notifications = ({ setNotificationCount }) => {
   const fetchNotifications = async () => {
     try {
       const userId = localStorage.getItem("userId");
-      const role = localStorage.getItem("role"); // MUST EXIST
+      const role = localStorage.getItem("role");
 
-      const data = await getNotifications(userId, role);
+      const data = await getNotifications(
+        userId,
+        role
+      );
 
       setNotifications(data || []);
       setLoading(false);
 
-      // ✅ COUNT UNREAD
-      const unreadCount =
-        [...virtualDeadlineNotes, ...(data || [])].filter(n => !n.read).length;
+      const unreadCount = [
+        ...virtualDeadlineNotes,
+        ...(data || []),
+      ].filter((n) => !n.read).length;
 
-      // 🔥 send count to parent (navbar badge)
       if (setNotificationCount) {
         setNotificationCount(unreadCount);
       }
-
     } catch (err) {
       console.error(err);
       setLoading(false);
     }
   };
 
-  // 🔁 AUTO REFRESH EVERY 10 SEC
+  // 🔁 AUTO REFRESH
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchNotifications();
@@ -65,82 +81,177 @@ const Notifications = ({ setNotificationCount }) => {
     const interval = setInterval(() => {
       fetchNotifications();
       checkDeadlines();
-    }, 10000); // every 10 sec
+    }, 10000);
 
     return () => clearInterval(interval);
   }, []);
 
-  // MARK AS READ
+  // 🔁 MARK READ
   const handleMarkAsRead = async (id) => {
     await markAsRead(id);
-    fetchNotifications(); // refresh UI + count
+    fetchNotifications();
   };
 
+  // 🎨 ICONS
   const getIcon = (type) => {
     switch (type) {
       case "SUCCESS":
-        return <FaCheck className="text-green-500" />;
+        return (
+          <div className="bg-green-100 text-green-600 p-3 rounded-2xl shadow-sm">
+            <FaCheck />
+          </div>
+        );
+
       case "WARNING":
-        return <FaExclamationTriangle className="text-yellow-500" />;
+        return (
+          <div className="bg-yellow-100 text-yellow-600 p-3 rounded-2xl shadow-sm">
+            <FaExclamationTriangle />
+          </div>
+        );
+
       default:
-        return <FaInfoCircle className="text-blue-500" />;
+        return (
+          <div className="bg-blue-100 text-blue-600 p-3 rounded-2xl shadow-sm">
+            <FaInfoCircle />
+          </div>
+        );
     }
   };
 
-  const allNotifications = [...virtualDeadlineNotes, ...notifications];
+  const allNotifications = [
+    ...virtualDeadlineNotes,
+    ...notifications,
+  ];
 
   return (
-    <div className="p-1">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-cyan-50 p-4 md:p-6">
 
-      {/* HEADER */}
-      <div className="flex items-center gap-2 mb-3 p-1">
-        <FaBell className="text-gray-600 text-xl" />
-        <h2 className="text-xl font-semibold">
-          All Notifications
-        </h2>
+      {/* 🔥 HEADER */}
+      <div className="flex items-center justify-between mb-6">
+
+        <div>
+          <h3 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
+            <div className="bg-gradient-to-br from-blue-500 to-cyan-500 p-3 rounded-2xl text-white shadow-lg">
+              <FaBell />
+            </div>
+
+            Notifications
+          </h3>
+
+          <p className="text-sm text-gray-500 mt-2 ml-1">
+            Stay updated with appraisal alerts and updates
+          </p>
+        </div>
+
+        <div className="bg-white/70 backdrop-blur-md border border-white shadow-lg rounded-2xl px-4 py-3 text-sm">
+          <span className="text-gray-500">
+            Total Notifications
+          </span>
+
+          <h3 className="text-xl font-bold text-blue-600">
+            {allNotifications.length}
+          </h3>
+        </div>
       </div>
 
-      {/* LIST */}
-      <div className="bg-white rounded shadow min-h-[300px]">
+      {/* 🔥 MAIN CARD */}
+      <div className="bg-white/80 backdrop-blur-md border border-white rounded-3xl shadow-2xl overflow-hidden">
 
-        {loading ? (
-          <p className="p-4 text-gray-500">Loading notifications...</p>
-        ) : allNotifications.length === 0 ? (
-          <p className="p-4 text-gray-500">No new notifications.</p>
-        ) : (
-          allNotifications.map((note) => (
-            <div
-              key={note.id}
-              className={`p-4 border-b flex justify-between items-center transition ${!note.read ? "bg-blue-50" : "hover:bg-gray-50"
-                }`}
-            >
-              <div className="flex items-start gap-3">
-                <div className="mt-1">{getIcon(note.type)}</div>
+        {/* TOP BAR */}
+        <div className="bg-gradient-to-r from-blue-100 via-cyan-100 to-sky-100 px-6 py-4 border-b border-blue-100">
 
-                <div>
-                  <p className={`text-sm ${!note.read ? "font-semibold text-gray-900" : "text-gray-700"
-                    }`}>
-                    {note.message}
-                  </p>
+          <div className="flex items-center gap-2">
+            <FaCheckCircle className="text-blue-600" />
 
-                  <span className="text-xs text-gray-500">
-                    {new Date(note.createdAt).toLocaleString()}
-                  </span>
-                </div>
+            <h2 className="font-semibold text-gray-800">
+              Recent Notifications
+            </h2>
+          </div>
+        </div>
+
+        {/* CONTENT */}
+        <div className="min-h-[400px]">
+
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-24">
+
+              <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+
+              <p className="text-gray-500 mt-4 text-sm">
+                Loading notifications...
+              </p>
+            </div>
+          ) : allNotifications.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24">
+
+              <div className="bg-blue-100 p-5 rounded-full text-blue-600 text-3xl shadow-md">
+                <FaBell />
               </div>
 
-              {!note.read && note.id !== "virtual_deadline" && (
-                <button
-                  onClick={() => handleMarkAsRead(note.id)}
-                  className="text-xs text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  Mark as Read
-                </button>
-              )}
-            </div>
-          ))
-        )}
+              <h3 className="mt-5 text-lg font-semibold text-gray-700">
+                No Notifications
+              </h3>
 
+              <p className="text-sm text-gray-500 mt-1">
+                You're all caught up 🎉
+              </p>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-100">
+
+              {allNotifications.map((note) => (
+                <div
+                  key={note.id}
+                  className={`group flex justify-between items-start gap-4 px-6 py-5 transition-all duration-300 ${
+                    !note.read
+                      ? "bg-blue-50/60"
+                      : "hover:bg-slate-50"
+                  }`}
+                >
+
+                  {/* LEFT */}
+                  <div className="flex items-start gap-4 flex-1">
+
+                    {getIcon(note.type)}
+
+                    <div className="flex-1">
+                      <p
+                        className={`text-sm leading-6 ${
+                          !note.read
+                            ? "font-semibold text-gray-800"
+                            : "text-gray-600"
+                        }`}
+                      >
+                        {note.message}
+                      </p>
+
+                      <span className="text-xs text-gray-400 mt-1 block">
+                        {new Date(
+                          note.createdAt
+                        ).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* BUTTON */}
+                  {!note.read &&
+                    note.id !== "virtual_deadline" && (
+                      <button
+                        onClick={() =>
+                          handleMarkAsRead(note.id)
+                        }
+                        className="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-xs font-medium hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-sm"
+                      >
+                        Mark as Read
+                      </button>
+                    )}
+
+                </div>
+              ))}
+            </div>
+          )}
+
+        </div>
       </div>
     </div>
   );
